@@ -1,8 +1,58 @@
-table, thead, tbody, tr, th, td {
-  border: 2px solid black;
+body {
+  text-align: center;
 }
 
-th, td {
+body * {
+  font-family: sans-serif;
+}
+
+table {
+  margin: 1em;
+  display: inline-block;
+}
+
+table {
+  border: 2px solid #36454f;
+  padding: 0 50px 50px 0;
+}
+
+th, td, tr {
   width: 50px;
   height: 50px;
+}
+
+tbody:first-child tr:first-child {
+  border: none;
+}
+
+tr:nth-child(even) td:nth-child(odd), tr:nth-child(odd) td:nth-child(even) {
+  background-color: #36454f;
+}
+
+td {
+  background-color: #CC0000;
+}
+
+.black {
+  color: #36454f;
+}
+
+.red {
+  color: #CC0000;
+}
+
+.red-pawn {
+  background-image: url("/red-pawn.png")
+}
+
+.red-king {
+  background-image: url("/red-king.png")
+}
+
+.black-pawn {
+  background-image: url("/black-pawn.png")
+}
+
+.black-king {
+  background-image: url("/black-king.png")
 }
