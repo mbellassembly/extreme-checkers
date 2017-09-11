@@ -86,29 +86,30 @@ $(document).ready(function() {
     }
   }
 
-  function addPieces(player) {
+  function generateGamePieces() {
     // if black:
     // red rows = 1, 2, 3
     // black rows = 6, 7, 8
-
-
-    var $table = $("<table>", {class: "gameboard " + player});
+    var $table = $("table");
     var $trs = $table.find('tr');
-    for (let i = 0; i < $trs.length; i++) {
-      $table.find('tr').each(function (i, el) {
-        var $tds = $(this).find('td');
-      });
-    }
-    $trs.each
-      var $tds = $(this).find('td');
-      //$td.data("col", i);
+    var $tdValid = $(".tbody-tr:nth-child(even) td:nth-child(odd), .tbody-tr:nth-child(odd) td:nth-child(even)");
+    console.log($tdValid);
+    $tdValid.each(function(index) {
+      $this = $(this);
+      $row = $this.data("row");
+      $col = $this.data("col");
+      if ($row === 1 || $row === 2 || $row === 3) {
+        $this.wrapInner("<div class='gamepiece red-pawn'>");
+      } else if ($row === 6 || $row === 7 || $row === 8) {
+        $this.wrapInner("<div class='gamepiece black-pawn'>");
+      }
+    });
   }
 
   function dragAndDrop() {
     var $tdValid = $(".tbody-tr:nth-child(even) td:nth-child(odd), .tbody-tr:nth-child(odd) td:nth-child(even)");
     var $tdInvalid = $(".tbody-tr:nth-child(odd) td:nth-child(odd), .tbody-tr:nth-child(even) td:nth-child(even)");
     var outside = false;
-    $("[data-col=h][data-row=1]").wrapInner("<div class='gamepiece black-pawn'>");
 
     $(".gamepiece").draggable({
       revert: "invalid",
@@ -151,8 +152,8 @@ $(document).ready(function() {
     var rows = 8;
     generateBoard("black", cols, rows);
     // generateBoard("red", cols, rows);
+    generateGamePieces();
     dragAndDrop();
-    //addPieces("black");
   }
   function buildFooter() {
     $footer = $("footer");
