@@ -1,5 +1,6 @@
 body {
   text-align: center;
+  background-color: rgba(0,0,0,.1);
 }
 
 body * {
@@ -9,11 +10,13 @@ body * {
 table {
   margin: 1em;
   display: inline-block;
+  background-color: rgba(255,255,255,1);
+  border: 2px solid rgba(0,0,0,.2);
+  padding: 0 50px 50px 0;
+  box-shadow: 2px 6px 6px rgba(0,0,0,.1);
 }
 
 table {
-  border: 2px solid #36454f;
-  padding: 0 50px 50px 0;
 }
 
 th, td, tr {
@@ -29,8 +32,16 @@ tr:nth-child(even) td:nth-child(odd), tr:nth-child(odd) td:nth-child(even) {
   background-color: #36454f;
 }
 
-td {
+tr:nth-child(even) td:nth-child(even), tr:nth-child(odd) td:nth-child(odd) {
   background-color: #CC0000;
+}
+
+div {
+  width: 50px;
+  height: 50px;
+  background-size: 75%;
+  background-position: center;
+  background-repeat: no-repeat;
 }
 
 .black {
@@ -42,17 +53,17 @@ td {
 }
 
 .red-pawn {
-  background-image: url("/red-pawn.png")
+  background-image: url("/img/red-pawn.png");
 }
 
 .red-king {
-  background-image: url("/red-king.png")
+  background-image: url("/img/red-king.png");
 }
 
 .black-pawn {
-  background-image: url("/black-pawn.png")
+  background-image: url("/img/black-pawn.png");
 }
 
 .black-king {
-  background-image: url("/black-king.png")
+  background-image: url("/img/black-king.png");
 }
