@@ -1,8 +1,10 @@
 $(document).ready(function() {
 
-  function wtf() {
-    return console.log("What the fuck");
+  function wtf(isThis) {
+    ಠ_ಠ = JSON.stringify(isThis, null, 1);
+    return console.log("Wtf is " + ಠ_ಠ);
   }
+
   console.log("document loaded");
 
 
@@ -11,7 +13,6 @@ $(document).ready(function() {
     buildMain();
     buildFooter();
     $('footer').append("<div>", {class: "gamepiece black-king"});
-
   });
 
   function generateBoard(player, cols, rows) {
@@ -93,7 +94,6 @@ $(document).ready(function() {
     var $table = $("table");
     var $trs = $table.find('tr');
     var $tdValid = $(".tbody-tr:nth-child(even) td:nth-child(odd), .tbody-tr:nth-child(odd) td:nth-child(even)");
-    console.log($tdValid);
     $tdValid.each(function(index) {
       $this = $(this);
       $row = $this.data("row");
@@ -102,6 +102,7 @@ $(document).ready(function() {
         $this.wrapInner("<div class='gamepiece red-pawn'>");
       } else if ($row === 6 || $row === 7 || $row === 8) {
         $this.wrapInner("<div class='gamepiece black-pawn'>");
+        wtf($this);
       }
     });
   }
@@ -110,7 +111,6 @@ $(document).ready(function() {
     var $tdValid = $(".tbody-tr:nth-child(even) td:nth-child(odd), .tbody-tr:nth-child(odd) td:nth-child(even)");
     var $tdInvalid = $(".tbody-tr:nth-child(odd) td:nth-child(odd), .tbody-tr:nth-child(even) td:nth-child(even)");
     var outside = false;
-
     $(".gamepiece").draggable({
       revert: "invalid",
       cursor: "move"
@@ -139,6 +139,7 @@ $(document).ready(function() {
         });
       },
     });
+
   }
 
   function buildHeader() {
