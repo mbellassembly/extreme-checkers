@@ -4,11 +4,30 @@ $(document).ready(function() {
   var game = {
     cols: 8,
     rows: 8,
+    rowsOfPieces: 3,
     players: ["black", "red"],
     player: "black",
     currentMove: {
       prevPos: {col: 0, row: 0},
-      nextPos: {col: 0, row: 0}
+      nextPos: {col: 0, row: 0},
+      validMoves: {
+        pawn: {
+          left: {col: 0, row: 0},
+          right: {col: 0, row: 0},
+          jumpLeft: {col: 0, row: 0},
+          jumpRight: {col: 0, row: 0}
+        },
+        king: {
+          frontLeft: {col: 0, row: 0},
+          frontRight: {col: 0, row: 0},
+          backLeft: {col: 0, row: 0},
+          backRight: {col: 0, row: 0},
+          jumpFrontLeft: {col: 0, row: 0},
+          jumpFrontRight: {col: 0, row: 0},
+          jumpBackLeft: {col: 0, row: 0},
+          jumpBackRight: {col: 0, row: 0}
+        }
+      }
     }
   }
 
@@ -169,7 +188,7 @@ $(document).ready(function() {
 
   function startGame() {
     $gamepieces = $(".gamepiece");
-    $gamepieces.on("mousedown", function() {
+    $gamepieces.on("dragstart", function() {
       $this = $(this);
       prev = game.currentMove.prevPos;
       prev.col = $this.data("col");
@@ -188,7 +207,9 @@ $(document).ready(function() {
       wtf(prev);
       console.log("next:");
       wtf(next);
-      takeTurn(prev, next);
+      generateValidMoves();
+      var validMoves = game.currentMove.validMoves;
+      takeTurn(prev, next, validMoves);
     });
 
     function takeTurn(prev, next) {
@@ -196,6 +217,7 @@ $(document).ready(function() {
         alert("no move attempted")
       } else {
         alert("moved from: " + [prev.col, prev.row] + " to: " + [next.col, next.row]);
+        for (var key in )
       }
       $redPieces = $(".red-gamepiece");
       $redBoard = $(".red .gamepiece");
@@ -251,18 +273,6 @@ $(document).ready(function() {
       },
     });
 
-  }
-
-  function arraysEqual(arr1, arr2) {
-    if(arr1.length !== arr2.length) {
-      return false;
-    }
-    for(var i = arr1.length; i--;) {
-        if(arr1[i] !== arr2[i]) {
-            return false;
-        }
-    }
-    return true;
   }
 
 });
