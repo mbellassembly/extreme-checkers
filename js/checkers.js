@@ -1,27 +1,65 @@
 $(document).ready(function() {
 
+  console.log("document loaded");
+  var game = {
+    cols: 8,
+    rows: 8,
+    players: ["black", "red"],
+    player: "black",
+    currentMove: {
+      prevPos: {col: 0, row: 0},
+      nextPos: {col: 0, row: 0}
+    }
+  }
+
+  if (localStorage.game === undefined) {
+    localStorage.game = JSON.stringify(game);
+  }
+
   function wtf(isThis) {
     ಠ_ಠ = JSON.stringify(isThis, null, 1);
     return console.log("Wtf is " + ಠ_ಠ);
   }
 
-  console.log("document loaded");
-
-
   $(function() {
     buildHeader();
     buildMain();
     buildFooter();
-    $('footer').append("<div>", {class: "gamepiece black-king"});
   });
+
+  function buildHeader() {
+    $header = $("header");
+    $h1 = $("<h1>");
+    $p = $("<p>");
+    $aiButton = $("<button>", {class: "vsAi"});
+    $h1.text("EXTREME CHECKERS");
+    $p.text("SELECT YOUR GAME-MODE");
+    $aiButton;
+    $header.append($h1);
+    $header.append($p);
+  }
+  function buildMain() {
+    game.players.forEach(function(player) {
+      generateBoard(player, game.cols, game.rows);
+    });
+    generateGamePieces();
+    dragAndDrop();
+    startGame();
+  }
+  function buildFooter() {
+    $footer = $("footer");
+    $h4 = $("<h4>");
+    $h4.html("&copy;" + " Matthew Bell aka Foozie3Moons");
+    $footer.append($h4);
+  }
 
   function generateBoard(player, cols, rows) {
 
     var getLetters = function(cols, reverse) {
       if (reverse) {
-        return 'abcdefghijklmnopqrstuvwxyz'.split('').slice(0,cols).reverse();
+        return "abcdefghijklmnopqrstuvwxyz".split("").slice(0,cols).reverse();
       } else {
-        return 'abcdefghijklmnopqrstuvwxyz'.split('').slice(0,cols);
+        return "abcdefghijklmnopqrstuvwxyz".split("").slice(0,cols);
       }
     }
 
@@ -72,17 +110,22 @@ $(document).ready(function() {
       } else {
         $tbodyth.text(i+1);
       }
-      for (var j = 1; j < cols+1; j++) {
-        var letters = 'abcdefghijklmnopqrstuvwxyz'.split('').slice(0,cols)
+      for (let j = 1; j < cols + 1; j++) {
+        var letters = "abcdefghijklmnopqrstuvwxyz".split("").slice(0,cols)
         var $tbodytd = $("<td>", {class: "tbody-td"});
         $tbodytr.append($tbodytd);
         if (player === "black") {
           // reverses col for player black
           $tbodytd.attr("data-col", letters[Math.abs(j - cols)]);
         } else {
-          $tbodytd.attr("data-col", letters[j]);
+          $tbodytd.attr("data-col", letters[j-1]);
         }
-        $tbodytd.attr("data-row", i+1);
+        if (player === "red") {
+          // reverses row for player red
+          $tbodytd.attr("data-row", Math.abs(i - rows));
+        } else {
+          $tbodytd.attr("data-row", i+1);
+        }
       }
     }
   }
@@ -92,19 +135,87 @@ $(document).ready(function() {
     // red rows = 1, 2, 3
     // black rows = 6, 7, 8
     var $table = $("table");
-    var $trs = $table.find('tr');
+    var $trs = $table.find("tr");
     var $tdValid = $(".tbody-tr:nth-child(even) td:nth-child(odd), .tbody-tr:nth-child(odd) td:nth-child(even)");
     $tdValid.each(function(index) {
       $this = $(this);
       $row = $this.data("row");
       $col = $this.data("col");
       if ($row === 1 || $row === 2 || $row === 3) {
-        $this.wrapInner("<div class='gamepiece red-pawn'>");
+        $this.wrapInner("<div class='gamepiece red-gamepiece red-pawn'>");
       } else if ($row === 6 || $row === 7 || $row === 8) {
-        $this.wrapInner("<div class='gamepiece black-pawn'>");
-        wtf($this);
+        $this.wrapInner("<div class='gamepiece black-gamepiece black-pawn'>");
       }
     });
+    $gamepieces = $(".gamepiece");
+    $gamepieces.each(function() {
+      $this = $(this);
+      // console.log(this);
+      $thisParent = $this.parent();
+      $this.data("col", $thisParent.data("col"));
+      $this.data("row", $thisParent.data("row"));
+      //
+      // console.log("Parent:");
+      // console.log($thisParent[0])
+      // console.log($thisParent.data("col"));
+      // console.log($thisParent.data("row"));
+      // console.log("Child:");
+      // console.log($this[0])
+      // console.log($this.data("col"));
+      // console.log($this.data("row"));
+      // wtf("Gamepiece: " + $this.className.split(/\s+/) + ", Col: " + $this.data("col") + ", Row: " + $this.data("row"));
+    });
+  }
+
+  function startGame() {
+    $gamepieces = $(".gamepiece");
+    $gamepieces.on("mousedown", function() {
+      $this = $(this);
+      prev = game.currentMove.prevPos;
+      prev.col = $this.data("col");
+      prev.row = $this.data("row")
+    })
+
+    $gamepieces.on( "dragstop", function( event, ui ) {
+      $this = $(this);
+      $thisParent = $this.parent();
+      $this.data("col", $thisParent.data("col"));
+      $this.data("row", $thisParent.data("row"));
+      next = game.currentMove.nextPos;
+      next.col = $this.data("col");
+      next.row = $this.data("row");
+      console.log("prev:");
+      wtf(prev);
+      console.log("next:");
+      wtf(next);
+      takeTurn(prev, next);
+    });
+
+    function takeTurn(prev, next) {
+      if (prev.col === next.col && prev.row === next.row) {
+        alert("no move attempted")
+      } else {
+        alert("moved from: " + [prev.col, prev.row] + " to: " + [next.col, next.row]);
+      }
+      $redPieces = $(".red-gamepiece");
+      $redBoard = $(".red .gamepiece");
+      $blackPieces = $(".black-gamepiece");
+      $blackBoard = $(".black .gamepiece");
+      // if (game.player === "black") {
+      //   $redBoard.draggable("disable");
+      //   $blackBoard.draggable("enable");
+      //   $redPieces.draggable("disable");
+      // } else if (game.player === "red") {
+      //   $blackBoard.draggable("disable");
+      //   $redBoard.draggable("enable");
+      //   $blackPieces.draggable("disable");
+      // }
+      if (game.player === "red") {
+        game.player = "black";
+      } else if (game.player === "black") {
+        game.player = "red";
+      }
+    }
   }
 
   function dragAndDrop() {
@@ -116,7 +227,7 @@ $(document).ready(function() {
       cursor: "move"
     });
 
-    $('tdbody-td').droppable();
+    $("tdbody-td").droppable();
 
     $(".gamepiece").droppable({});
 
@@ -142,25 +253,16 @@ $(document).ready(function() {
 
   }
 
-  function buildHeader() {
-    $header = $("header");
-    $h1 = $("<h1>");
-    $h1.text("LET'S PLAY SOME CHECKERS");
-    $header.append($h1);
-  }
-  function buildMain() {
-    var cols = 8;
-    var rows = 8;
-    generateBoard("black", cols, rows);
-    // generateBoard("red", cols, rows);
-    generateGamePieces();
-    dragAndDrop();
-  }
-  function buildFooter() {
-    $footer = $("footer");
-    $h4 = $("<h4>");
-    $h4.html("&copy;" + " Matthew Bell aka Foozie3Moons");
-    $footer.append($h4);
+  function arraysEqual(arr1, arr2) {
+    if(arr1.length !== arr2.length) {
+      return false;
+    }
+    for(var i = arr1.length; i--;) {
+        if(arr1[i] !== arr2[i]) {
+            return false;
+        }
+    }
+    return true;
   }
 
 });
