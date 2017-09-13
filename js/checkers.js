@@ -5,7 +5,7 @@ $(document).ready(function() {
     cols: 8,
     rows: 8,
     rowsOfPieces: 3,
-    players: ["black", "red"],
+    players: ["black"],
     player: "black",
     currentMove: {
       current: {col: 0, letter: 0, row: 0},
@@ -14,18 +14,25 @@ $(document).ready(function() {
         pawn: {
           left: {col: 0, row: 0},
           right: {col: 0, row: 0},
-          jumpLeft: {col: 0, row: 0},
-          jumpRight: {col: 0, row: 0}
         },
         king: {
           frontLeft: {col: 0, row: 0},
           frontRight: {col: 0, row: 0},
           backLeft: {col: 0, row: 0},
           backRight: {col: 0, row: 0},
-          jumpFrontLeft: {col: 0, row: 0},
-          jumpFrontRight: {col: 0, row: 0},
-          jumpBackLeft: {col: 0, row: 0},
-          jumpBackRight: {col: 0, row: 0}
+
+        }
+      },
+      validJumps: {
+        pawn: {
+          left: {col: 0, row: 0},
+          right: {col: 0, row: 0}
+        },
+        king: {
+          frontLeft: {col: 0, row: 0},
+          frontRight: {col: 0, row: 0},
+          backLeft: {col: 0, row: 0},
+          backRight: {col: 0, row: 0}
         }
       }
     }
@@ -71,6 +78,8 @@ $(document).ready(function() {
     $h4.html("&copy;" + " Matthew Bell aka Foozie3Moons");
     $footer.append($h4);
   }
+
+  // everything above this line is good
 
   function generateBoard(player, cols, rows) {
 
@@ -136,10 +145,10 @@ $(document).ready(function() {
         if (player === "black") {
           // reverses col for player black
           $tbodytd.attr("data-letter", letters[Math.abs(j - cols)]);
-          $tbodytd.attr("data-col", Math.abs(j - cols));
+          $tbodytd.attr("data-col", Math.abs(j - cols - 1));
         } else {
           $tbodytd.attr("data-letter", letters[j-1]);
-          $tbodytd.attr("data-col", j-1);
+          $tbodytd.attr("data-col", j - 2);
         }
         if (player === "red") {
           // reverses row for player red
@@ -177,20 +186,16 @@ $(document).ready(function() {
   }
 
   function startGame() {
-
-    function generateGrid() {
-
-    }
     $gamepieces = $(".gamepiece");
     $gamepieces.on("dragstart", function() {
       $this = $(this);
-      current = game.currentMove.current;
-      current.col = $this.data("col");
-      current.letter = $this.data("letter");
-      // console.log($this.data("letter"));
-      current.row = $this.data("row");
-      generateValidMoves($this, current);
-    })
+      game.currentMove.current = {
+        col: $this.data("col"),
+        row: $this.data("row"),
+        letter: $this.data("letter")
+      };
+      //generateValidMoves($this);
+    });
 
     $gamepieces.on( "dragstop", function( event, ui ) {
       $this = $(this);
@@ -198,114 +203,93 @@ $(document).ready(function() {
       $this.data("col", $thisParent.data("col"));
       $this.data("letter", $thisParent.data("letter"));
       $this.data("row", $thisParent.data("row"));
-      target = game.currentMove.target;
-      target.col = $this.data("col");
-      target.letter = $this.data("letter");
-      // console.log($this.data("letter"));
-      target.row = $this.data("row");
+      game.currentMove.target = {
+        col: $this.data("col"),
+        row: $this.data("row"),
+        letter: $this.data("letter")
+      };
       if ($this.hasClass("pawn")) {
         var validMoves = game.currentMove.validMoves.pawn;
       } else if ($gamepiece.hasClass("king")) {
         var validMoves = game.currentMove.validMoves.king;
       }
-      takeTurn(current, target, validMoves);
+      takeTurn($this);
     });
 
-    function generateValidMoves($elem, current) {
+    function generateValidMoves($elem) {
       if (game.player === "black") {
         if ($elem.hasClass("black-pawn")) {
-          console.log("black-pawn");
+          var current = game.currentMove.current;
           var pawn = game.currentMove.validMoves.pawn;
           pawn.right = {col: current.col - 1, row: current.row - 1};
           pawn.left = {col: current.col + 1, row: current.row - 1};
-          pawn.jumpRight = {col: current.col - 2, row: current.row - 2};
-          pawn.jumpLeft = {col: current.col + 2, row: current.row - 2};
+          return pawn;
         } else if ($elem.hasClass("black-king")) {
           var king = game.currentMove.validMoves.king;
           // king.frontRight = {col: , row:};
           // king.frontLeft = {col: , row:};
           // king.backRight = {col: , row:};
           // king.backLeft = {col: , row:};
-          // king.jumpFrontRight = {col: , row:};
-          // king.jumpFrontLeft = {col: , row:};
-          // king.jumpBackRight = {col: , row:};
-          // king.jumpBackLeft = {col: , row:};
+          return king;
         }
       } else if (game.player === "red") {
         if ($elem.hasClass("red-pawn")) {
-          console.log("red-pawn");
+          var current = game.currentMove.current;
           var pawn = game.currentMove.validMoves.pawn;
           pawn.right = {col: current.col - 1, row: current.row + 1};
           pawn.left = {col: current.col + 1, row: current.row + 1};
-          pawn.jumpRight = {col: current.col - 2, row: current.row - 2};
-          pawn.jumpLeft = {col: current.col + 2, row: current.row - 2};
+          return pawn;
         } else if ($elem.hasClass("red-king")) {
           var king = game.currentMove.ValidMoves.king;
           // king.frontRight = {col: , row:};
           // king.frontLeft = {col: , row:};
           // king.backRight = {col: , row:};
           // king.backLeft = {col: , row:};
-          // king.jumpFrontRight = {col: , row:};
-          // king.jumpFrontLeft = {col: , row:};
-          // king.jumpBackRight = {col: , row:};
-          // king.jumpBackLeft = {col: , row:};
-        } else {
-        console.log("did nothing");
+          return king;
         }
+      } else {
+        console.log("did nothing");
       }
     }
 
-    function takeTurn(current, next, validMoves) {
+    function takeTurn($elem) {
+      var target = game.currentMove.target;
+      var current = game.currentMove.current;
+      var validMoves = generateValidMoves($elem);
       var validMove = function() {
-        console.log(validMoves);
         for (var direction in validMoves) {
-          if (validMoves[direction].col === next.col && validMoves[direction].row === next.row) {
+          if (validMoves[direction].col === target.col && validMoves[direction].row === target.row) {
             return true;
+          }
         }
         return false;
-          // console.log("validMove " + validMoves[validMove].row);
-          // console.log(next.col);
-          // console.log(validMove.col);
-          // console.log(next.row);
-          // console.log(validMove.row);
-          // if (next.col === validMove.col && next.row === validMove.row) {
-          //   console.log(next.col);
-          //   console.log(validMove.col);
-          //   console.log(next.row);
-          //   console.log(validMove.row);
-          //   return true;
-          // }
-        // }
-        }
       }
-      if (current.col === next.col && current.row === next.row) {
+      if (current.col === target.col && current.row === target.row) {
         alert("no move attempted")
       } else if (validMove()) {
-        alert("valid move from: " + [current.letter, current.row] + " to: " + [next.letter, next.row]);
+        alert("valid move from: " + [current.letter, current.row] + " to: " + [target.letter, target.row]);
       } else {
-        alert("invalid move from: " + [current.letter, current.row] + " to: " + [next.letter, next.row]);
-        for (var key in validMoves) {
-
-        }
+        $elem.draggable({ revert: true });
+        alert("invalid move from: " + [current.letter, current.row] + " to: " + [target.letter, target.row]);
       }
       $redPieces = $(".red-gamepiece");
       $redBoard = $(".red .gamepiece");
       $blackPieces = $(".black-gamepiece");
       $blackBoard = $(".black .gamepiece");
-      // if (game.player === "black") {
-      //   $redBoard.draggable("disable");
-      //   $blackBoard.draggable("enable");
-      //   $redPieces.draggable("disable");
-      // } else if (game.player === "red") {
+      if (game.player === "black") {
+        $redBoard.draggable("disable");
+        $blackBoard.draggable("enable");
+        $redPieces.draggable("disable");
+      } // else if (game.player === "red") {
       //   $blackBoard.draggable("disable");
       //   $redBoard.draggable("enable");
       //   $blackPieces.draggable("disable");
       // }
-      if (game.player === "red") {
-        game.player = "black";
-      } else if (game.player === "black") {
-        game.player = "red";
-      }
+      // if (game.player === "red") {
+      //   game.player = "black";
+      // } else if (game.player === "black") {
+      //   game.player = "red";
+      // }
     }
   }
 
