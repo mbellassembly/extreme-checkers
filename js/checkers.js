@@ -8,8 +8,8 @@ $(document).ready(function() {
     players: ["black", "red"],
     player: "black",
     currentMove: {
-      prevPos: {col: 0, row: 0},
-      nextPos: {col: 0, row: 0},
+      current: {col: 0, letter: 0, row: 0},
+      target: {col: 0, letter: 0, row: 0},
       validMoves: {
         pawn: {
           left: {col: 0, row: 0},
@@ -135,9 +135,11 @@ $(document).ready(function() {
         $tbodytr.append($tbodytd);
         if (player === "black") {
           // reverses col for player black
-          $tbodytd.attr("data-col", letters[Math.abs(j - cols)]);
+          $tbodytd.attr("data-letter", letters[Math.abs(j - cols)]);
+          $tbodytd.attr("data-col", Math.abs(j - cols));
         } else {
-          $tbodytd.attr("data-col", letters[j-1]);
+          $tbodytd.attr("data-letter", letters[j-1]);
+          $tbodytd.attr("data-col", j-1);
         }
         if (player === "red") {
           // reverses row for player red
@@ -150,74 +152,141 @@ $(document).ready(function() {
   }
 
   function generateGamePieces() {
-    // if black:
-    // red rows = 1, 2, 3
-    // black rows = 6, 7, 8
     var $table = $("table");
     var $trs = $table.find("tr");
     var $tdValid = $(".tbody-tr:nth-child(even) td:nth-child(odd), .tbody-tr:nth-child(odd) td:nth-child(even)");
     $tdValid.each(function(index) {
+      // TODO: dynamically generate from game.rowsOfPieces
       $this = $(this);
       $row = $this.data("row");
       $col = $this.data("col");
       if ($row === 1 || $row === 2 || $row === 3) {
-        $this.wrapInner("<div class='gamepiece red-gamepiece red-pawn'>");
+        $this.wrapInner("<div class='gamepiece pawn red-gamepiece red-pawn'>");
       } else if ($row === 6 || $row === 7 || $row === 8) {
-        $this.wrapInner("<div class='gamepiece black-gamepiece black-pawn'>");
+        $this.wrapInner("<div class='gamepiece pawn black-gamepiece black-pawn'>");
       }
     });
     $gamepieces = $(".gamepiece");
     $gamepieces.each(function() {
       $this = $(this);
-      // console.log(this);
       $thisParent = $this.parent();
       $this.data("col", $thisParent.data("col"));
+      $this.data("letter", $thisParent.data("letter"));
       $this.data("row", $thisParent.data("row"));
-      //
-      // console.log("Parent:");
-      // console.log($thisParent[0])
-      // console.log($thisParent.data("col"));
-      // console.log($thisParent.data("row"));
-      // console.log("Child:");
-      // console.log($this[0])
-      // console.log($this.data("col"));
-      // console.log($this.data("row"));
-      // wtf("Gamepiece: " + $this.className.split(/\s+/) + ", Col: " + $this.data("col") + ", Row: " + $this.data("row"));
     });
   }
 
   function startGame() {
+
+    function generateGrid() {
+
+    }
     $gamepieces = $(".gamepiece");
     $gamepieces.on("dragstart", function() {
       $this = $(this);
-      prev = game.currentMove.prevPos;
-      prev.col = $this.data("col");
-      prev.row = $this.data("row")
+      current = game.currentMove.current;
+      current.col = $this.data("col");
+      current.letter = $this.data("letter");
+      // console.log($this.data("letter"));
+      current.row = $this.data("row");
+      generateValidMoves($this, current);
     })
 
     $gamepieces.on( "dragstop", function( event, ui ) {
       $this = $(this);
       $thisParent = $this.parent();
       $this.data("col", $thisParent.data("col"));
+      $this.data("letter", $thisParent.data("letter"));
       $this.data("row", $thisParent.data("row"));
-      next = game.currentMove.nextPos;
-      next.col = $this.data("col");
-      next.row = $this.data("row");
-      console.log("prev:");
-      wtf(prev);
-      console.log("next:");
-      wtf(next);
-      generateValidMoves();
-      var validMoves = game.currentMove.validMoves;
-      takeTurn(prev, next, validMoves);
+      target = game.currentMove.target;
+      target.col = $this.data("col");
+      target.letter = $this.data("letter");
+      // console.log($this.data("letter"));
+      target.row = $this.data("row");
+      if ($this.hasClass("pawn")) {
+        var validMoves = game.currentMove.validMoves.pawn;
+      } else if ($gamepiece.hasClass("king")) {
+        var validMoves = game.currentMove.validMoves.king;
+      }
+      takeTurn(current, target, validMoves);
     });
 
-    function takeTurn(prev, next) {
-      if (prev.col === next.col && prev.row === next.row) {
+    function generateValidMoves($elem, current) {
+      if (game.player === "black") {
+        if ($elem.hasClass("black-pawn")) {
+          console.log("black-pawn");
+          var pawn = game.currentMove.validMoves.pawn;
+          pawn.right = {col: current.col - 1, row: current.row - 1};
+          pawn.left = {col: current.col + 1, row: current.row - 1};
+          pawn.jumpRight = {col: current.col - 2, row: current.row - 2};
+          pawn.jumpLeft = {col: current.col + 2, row: current.row - 2};
+        } else if ($elem.hasClass("black-king")) {
+          var king = game.currentMove.validMoves.king;
+          // king.frontRight = {col: , row:};
+          // king.frontLeft = {col: , row:};
+          // king.backRight = {col: , row:};
+          // king.backLeft = {col: , row:};
+          // king.jumpFrontRight = {col: , row:};
+          // king.jumpFrontLeft = {col: , row:};
+          // king.jumpBackRight = {col: , row:};
+          // king.jumpBackLeft = {col: , row:};
+        }
+      } else if (game.player === "red") {
+        if ($elem.hasClass("red-pawn")) {
+          console.log("red-pawn");
+          var pawn = game.currentMove.validMoves.pawn;
+          pawn.right = {col: current.col - 1, row: current.row + 1};
+          pawn.left = {col: current.col + 1, row: current.row + 1};
+          pawn.jumpRight = {col: current.col - 2, row: current.row - 2};
+          pawn.jumpLeft = {col: current.col + 2, row: current.row - 2};
+        } else if ($elem.hasClass("red-king")) {
+          var king = game.currentMove.ValidMoves.king;
+          // king.frontRight = {col: , row:};
+          // king.frontLeft = {col: , row:};
+          // king.backRight = {col: , row:};
+          // king.backLeft = {col: , row:};
+          // king.jumpFrontRight = {col: , row:};
+          // king.jumpFrontLeft = {col: , row:};
+          // king.jumpBackRight = {col: , row:};
+          // king.jumpBackLeft = {col: , row:};
+        } else {
+        console.log("did nothing");
+        }
+      }
+    }
+
+    function takeTurn(current, next, validMoves) {
+      var validMove = function() {
+        console.log(validMoves);
+        for (var direction in validMoves) {
+          if (validMoves[direction].col === next.col && validMoves[direction].row === next.row) {
+            return true;
+        }
+        return false;
+          // console.log("validMove " + validMoves[validMove].row);
+          // console.log(next.col);
+          // console.log(validMove.col);
+          // console.log(next.row);
+          // console.log(validMove.row);
+          // if (next.col === validMove.col && next.row === validMove.row) {
+          //   console.log(next.col);
+          //   console.log(validMove.col);
+          //   console.log(next.row);
+          //   console.log(validMove.row);
+          //   return true;
+          // }
+        // }
+        }
+      }
+      if (current.col === next.col && current.row === next.row) {
         alert("no move attempted")
+      } else if (validMove()) {
+        alert("valid move from: " + [current.letter, current.row] + " to: " + [next.letter, next.row]);
       } else {
-        alert("moved from: " + [prev.col, prev.row] + " to: " + [next.col, next.row]);
-        for (var key in )
+        alert("invalid move from: " + [current.letter, current.row] + " to: " + [next.letter, next.row]);
+        for (var key in validMoves) {
+
+        }
       }
       $redPieces = $(".red-gamepiece");
       $redBoard = $(".red .gamepiece");
