@@ -10,7 +10,11 @@ $(document).ready(function() {
     currentMove: {
       currentPiece: 0,
       initial: 0,
-      target: {col: 0, letter: 0, row: 0},
+      target: {
+        col: 0,
+        letter: 0,
+        row: 0
+      },
       targetCell: $("td"),
       jumpedPiece: 0,
       validMove: false,
@@ -19,26 +23,86 @@ $(document).ready(function() {
       jumped: false,
       validMoves: {
         pawn: {
-          left: {col: 6, row: 5},
-          right: {col: 4, row: 5}
+          left: {
+            col: 0,
+            row: 0
+          },
+          right: {
+            col: 0,
+            row: 0
+          }
         },
         king: {
-          frontLeft: {col: 0, row: 0},
-          frontRight: {col: 0, row: 0},
-          backLeft: {col: 0, row: 0},
-          backRight: {col: 0, row: 0}
+          frontLeft: {
+            col: 0,
+            row: 0
+          },
+          frontRight: {
+            col: 0,
+            row: 0
+          },
+          backLeft: {
+            col: 0,
+            row: 0
+          },
+          backRight: {
+            col: 0,
+            row: 0
+          }
         }
       },
       validJumps: {
         pawn: {
-          left: {col: 0, row: 0, jumpedPiece: {col: 0, row: 0}},
-          right: {col: 0, row: 0, jumpedPiece: {col: 0, row: 0}}
+          left: {
+            col: 0,
+            row: 0,
+            jumpedPiece: {
+              col: 0,
+              row: 0
+            }
+          },
+          right: {
+            col: 0,
+            row: 0,
+            jumpedPiece: {
+              col: 0,
+              row: 0
+            }
+          }
         },
         king: {
-          frontLeft: {col: 0, row: 0, jumpedPiece: {col: 0, row: 0}},
-          frontRight: {col: 0, row: 0, jumpedPiece: {col: 0, row: 0}},
-          backLeft: {col: 0, row: 0, jumpedPiece: {col: 0, row: 0}},
-          backRight: {col: 0, row: 0, jumpedPiece: {col: 0, row: 0}}
+          frontLeft: {
+            col: 0,
+            row: 0,
+            jumpedPiece: {
+              col: 0,
+              row: 0
+            }
+          },
+          frontRight: {
+            col: 0,
+            row: 0,
+            jumpedPiece: {
+              col: 0,
+              row: 0
+            }
+          },
+          backLeft: {
+            col: 0,
+            row: 0,
+            jumpedPiece: {
+              col: 0,
+              row: 0
+            }
+          },
+          backRight: {
+            col: 0,
+            row: 0,
+            jumpedPiece: {
+              col: 0,
+              row: 0
+            }
+          }
         }
       }
     }
@@ -359,31 +423,6 @@ $(document).ready(function() {
         }
       }
     }
-    // var $tdValid = $(".tbody-tr:nth-child(even) td:nth-child(odd), .tbody-tr:nth-child(odd) td:nth-child(even)");
-    // $(".gamepiece").draggable( {
-    //   revert: "invalid"
-    // });
-    // $tdValid.droppable();
-    //
-    // game.currentMove.targetCell.droppable({
-    //   drop: function(event, ui) {
-    //     var $this = $(this);
-    //
-    //     // $this.addClass("ui-state-highlight");
-    //     $this.append(ui.draggable);
-    //
-    //     var width = $this.width();
-    //     var height = $this.height();
-    //     var cntrLeft = width / 2 - ui.draggable.width() / 2;// + left;
-    //     var cntrTop = height / 2 - ui.draggable.height() / 2;// + top;
-    //
-    //     ui.draggable.css({
-    //         left: cntrLeft + "px",
-    //         top: cntrTop + "px"
-    //     });
-    //   }
-    // });
-
 
     // EVENTS
     // 1. Dragstart
@@ -464,6 +503,7 @@ $(document).ready(function() {
         if (game.currentMove.validJump) {
           game.currentMove.jumpedPiece.remove();
         }
+        console.log()
         if (game.currentMove.moved) {
           switch (game.player) {
             case "red":
@@ -475,6 +515,8 @@ $(document).ready(function() {
             }
           game.currentMove.moved = false;
           game.currentMove.jumped = false;
+          game.currentMove.initial = 0;
+          game.currentMove.currentPiece = 0;
           resetValidMoves();
           // wtf(game);
           console.log(game.player + "'s turn!");
@@ -485,5 +527,30 @@ $(document).ready(function() {
     });
 
   }
+
+      // var $tdValid = $(".tbody-tr:nth-child(even) td:nth-child(odd), .tbody-tr:nth-child(odd) td:nth-child(even)");
+      // $(".gamepiece").draggable( {
+      //   revert: "invalid"
+      // });
+      // $tdValid.droppable();
+      //
+      // game.currentMove.targetCell.droppable({
+      //   drop: function(event, ui) {
+      //     var $this = $(this);
+      //
+      //     // $this.addClass("ui-state-highlight");
+      //     $this.append(ui.draggable);
+      //
+      //     var width = $this.width();
+      //     var height = $this.height();
+      //     var cntrLeft = width / 2 - ui.draggable.width() / 2;// + left;
+      //     var cntrTop = height / 2 - ui.draggable.height() / 2;// + top;
+      //
+      //     ui.draggable.css({
+      //         left: cntrLeft + "px",
+      //         top: cntrTop + "px"
+      //     });
+      //   }
+      // });
 
 });
