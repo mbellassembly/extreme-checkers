@@ -8,9 +8,10 @@ $(document).ready(function() {
     players: ["black"],
     player: "black",
     currentMove: {
-      initial: {col: 0, letter: 0, row: 0},
+      currentPiece: 0,
+      initial: 0,
       target: {col: 0, letter: 0, row: 0},
-      valid: true,
+      valid: false,
       validMoves: {
         pawn: {
           left: {col: 6, row: 5},
@@ -70,8 +71,6 @@ $(document).ready(function() {
       generateBoard(player, game.cols, game.rows);
     });
     generateGamePieces();
-    dragAndDrop();
-    //startGame();
   }
   function buildFooter() {
     $footer = $("footer");
@@ -182,160 +181,6 @@ $(document).ready(function() {
       $this.data("letter", $thisParent.data("letter"));
       $this.data("row", $thisParent.data("row"));
     });
-  }
-
-  function dragAndDrop() {
-    var validMoves = game.currentMove.validMoves.pawn;
-    var selector = "";
-    var $tdValidAll = $(".tbody-tr:nth-child(even) td:nth-child(odd), .tbody-tr:nth-child(odd) td:nth-child(even)");
-    $tdValidAll.each(function() {
-      $this = $(this);
-      for (move in validMoves) {
-        //console.log($this);
-        if ($this.data("col") === validMoves[move].col && $this.data("row") === validMoves[move].row) {
-          selector += "td.tbody-td[data-col="+$this.data("col")+"][data-row="+$this.data("row")+"], ";
-        }
-      }
-    });
-    selector = selector.replace(/,\s*$/,"");
-    $tdValid = $(selector);
-    var $gamepiece = $(".gamepiece");
-    $gamepiece.draggable({
-      revert: "invalid",
-      helper: "clone",
-      cursor: "move",
-      start: function(e, ui) {
-        $(this).addClass("hidden");
-      },
-      stop: function(e, ui) {
-        $(this).removeClass("hidden");
-      }
-    });
-
-    $tdValidAll.droppable({
-      // accept: $gamepiece,
-      classes: {
-        "ui-droppable-active": "ui-state-default"
-      },
-      disabled: false,
-      over: function(event, ui) {
-        $this = $(this);
-        game.currentMove.target = {col: $this.parent().data("col"), row: $this.parent().data("row")};
-      },
-      drop: Drop
-    });
-
-
-    function Drop(event, ui) {
-
-      var draggablePos = {col: ui.draggable.data("col"), row: ui.draggable.data("row"), letter: ui.draggable.data("letter")}
-      var droppablePos = {col: $(this).data("col"), row: $(this).data("row"), letter: $(this).data("letter")};
-
-      var validMoves = game.currentMove.validMoves.pawn;
-      var selector = "";
-      var $tdValidAll = $(".tbody-tr:nth-child(even) td:nth-child(odd), .tbody-tr:nth-child(odd) td:nth-child(even)");
-      $tdValidAll.each(function() {
-        $this = $(this);
-        for (move in validMoves) {
-          //console.log($this);
-          if ($this.data("col") === validMoves[move].col && $this.data("row") === validMoves[move].row) {
-            selector += "td.tbody-td[data-col="+$this.data("col")+"][data-row="+$this.data("row")+"], ";
-          }
-        }
-      });
-      selector = selector.replace(/,\s*$/,"");
-      console.log(selector);
-      $tdValid = $(selector);
-
-      $(selector).droppable(function(event,ui) {
-        disabled: true
-      })
-
-      var $this = $(this);
-
-      // $this.addClass("ui-state-highlight");
-
-      $this.append(ui.draggable);
-
-      var width = $this.width();
-      var height = $this.height();
-
-      var cntrLeft = width / 2 - ui.draggable.width() / 2;// + left;
-      var cntrTop = height / 2 - ui.draggable.height() / 2;// + top;
-
-      ui.draggable.css({
-          left: cntrLeft + "px",
-          top: cntrTop + "px"
-      });
-      console.log(draggablePos);
-      console.log(droppablePos);
-    }
-
-    var validMoveSelector = function() {
-      $
-    }
-
-    function generateValidMoves($elem) {
-      if (game.player === "black") {
-        if ($elem.hasClass("black-pawn")) {
-          var initial = game.currentMove.initial;
-          var pawn = game.currentMove.validMoves.pawn;
-          pawn.right = {col: initial.col - 1, row: initial.row - 1};
-          pawn.left = {col: initial.col + 1, row: initial.row - 1};
-          return pawn;
-        } else if ($elem.hasClass("black-king")) {
-          var king = game.currentMove.validMoves.king;
-          // king.frontRight = {col: , row:};
-          // king.frontLeft = {col: , row:};
-          // king.backRight = {col: , row:};
-          // king.backLeft = {col: , row:};
-          return king;
-        }
-      } else if (game.player === "red") {
-        if ($elem.hasClass("red-pawn")) {
-          var initial = game.currentMove.initial;
-          var pawn = game.currentMove.validMoves.pawn;
-          pawn.right = {col: initial.col - 1, row: initial.row + 1};
-          pawn.left = {col: initial.col + 1, row: initial.row + 1};
-          return pawn;
-        } else if ($elem.hasClass("red-king")) {
-          var king = game.currentMove.ValidMoves.king;
-          // king.frontRight = {col: , row:};
-          // king.frontLeft = {col: , row:};
-          // king.backRight = {col: , row:};
-          // king.backLeft = {col: , row:};
-          return king;
-        }
-      } else {
-        console.log("did nothing");
-      }
-    }
-
-    function checkMove($elem, unitType) {
-      if(game.currentMove.target.col !== $elem.col && game.currentMove.target.row !== $elem.row) {
-        var target = game.currentMove.target;
-        var initial = game.currentMove.initial;
-        if (unitType === "pawn") {
-          var validMoves = game.currentMove.validMoves.pawn;
-        } else if (unitType === "king") {
-          var validMoves = game.currentMove.validMoves.king;
-        }
-        target = {col: $elem.data("col"), row: $elem.data("row")};
-        var validMove = function() {
-          for (var direction in validMoves) {
-            console.log("target " + target.row + " : validMove " + validMoves[direction].row);
-            console.log("target " + target.col + " : validMove " + validMoves[direction].col);
-            if (validMoves[direction].col === target.col && validMoves[direction].row === target.row) {
-              wtf("did something");
-              return true;
-            }
-          }
-          return false;
-        }
-        console.log(validMove());
-        game.currentMove.valid = validMove();
-      }
-    }
 
     function takeTurn($elem) {
       // check current move against valid moves
@@ -345,70 +190,93 @@ $(document).ready(function() {
       var initial = game.currentMove.initial;
       var target = game.currentMove.target;
 
-      if (initial.col === target.col && initial.row === target.row) {
-        alert("no move attempted")
-      }
-      // else {
-      //   $tdvalid = $(".tbody-tr:nth-child(even) td:nth-child(odd), .tbody-tr:nth-child(odd) td:nth-child(even)");
-      //   $tdvalid.droppable( "option", "disabled", true);
-      //   alert("invalid move from: " + [current.letter, current.row] + " to: " + [target.letter, target.row]);
-      // }
-      $redPieces = $(".red-gamepiece");
-      $redBoard = $(".red .gamepiece");
-      $blackPieces = $(".black-gamepiece");
-      $blackBoard = $(".black .gamepiece");
+    }
+
+    function getValidMoves() {
+      var currentPiece = game.currentMove.currentPiece;
       if (game.player === "black") {
-        $redBoard.draggable("disable");
-        $blackBoard.draggable("enable");
-        $redPieces.draggable("disable");
-      } // else if (game.player === "red") {
-      //   $blackBoard.draggable("disable");
-      //   $redBoard.draggable("enable");
-      //   $blackPieces.draggable("disable");
-      // }
-      // if (game.player === "red") {
-      //   game.player = "black";
-      // } else if (game.player === "black") {
-      //   game.player = "red";
+        if (currentPiece.hasClass("black-pawn")) {
+          var pawn = game.currentMove.validMoves.pawn;
+          pawn.right = {col: currentPiece.data("col") - 1, row: currentPiece.data("row") - 1};
+          pawn.left = {col: currentPiece.data("col") + 1, row: currentPiece.data("row") - 1};
+          return pawn;
+        } else if ($currentPiece.hasClass("black-king")) {
+          var king = game.currentMove.validMoves.king;
+          // king.frontRight = {col: , row:};
+          // king.frontLeft = {col: , row:};
+          // king.backRight = {col: , row:};
+          // king.backLeft = {col: , row:};
+          return king;
+        }
+      }
+      // else if (game.player === "red") {
+      //   if ($elem.hasClass("red-pawn")) {
+      //     var initial = game.currentMove.initial;
+      //     var pawn = game.currentMove.validMoves.pawn;
+      //     pawn.right = {col: initial.col - 1, row: initial.row + 1};
+      //     pawn.left = {col: initial.col + 1, row: initial.row + 1};
+      //     return pawn;
+      //   } else if ($elem.hasClass("red-king")) {
+      //     var king = game.currentMove.ValidMoves.king;
+      //     // king.frontRight = {col: , row:};
+      //     // king.frontLeft = {col: , row:};
+      //     // king.backRight = {col: , row:};
+      //     // king.backLeft = {col: , row:};
+      //     return king;
+      //   }
+      // } else {
+      //   console.log("did nothing");
       // }
     }
+
     // EVENTS
     // 1. Dragstart
-    $gamepieces.on("dragstart", function(event, ui) {
-      // log initial value
-      // get valid moves
-
-      $this = $(this);
-      game.currentMove.initial = {
-        col: $this.data("col"),
-        row: $this.data("row"),
-        letter: $this.data("letter")
-      };
-
-      // console.log("COL " + game.currentMove.target.letter);
-      // console.log("ROW " + game.currentMove.target.row);
-      generateValidMoves($this);
+    $gamepieces.on("mousedown", function() {
+      game.currentMove.currentPiece = $(this);
+      game.currentMove.initial = $(this).parent();
+      getValidMoves();
+      $(this).detach();
     });
+
     // 2. Hover
     //    Log target
     //    Compare target with Valid Moves
+    $tdValid.hover(function() {
+      var validMoves = game.currentMove.validMoves.pawn
+      var target = game.currentMove.target
+      target = {col: $(this).data("col"), row: $(this).data("row"), letter: $(this).data("letter")}
+      var validMove = function() {
+        for (var move in validMoves) {
+          // console.log([validMoves[move].col, validMoves[move].row])
+          // console.log([target.col, target.row])
+          if (validMoves[move].col === target.col && validMoves[move].row === target.row) {
+            wtf("did something");
+            return true;
+          }
+        }
+        return false;
+      }
+      game.currentMove.valid = validMove();
+    })
+
     // 4. Dragstop
     //    This will fire if dropped
-    $(".tbody-td").hover(function(event,ui) {
-      // console.log([game.currentMove.target.letter, game.currentMove.target.row]);
+
+    $tdValid.on("mouseup", function() {
+      if (game.currentMove.valid) {
+        piece = game.currentMove.currentPiece;
+        piece.data("col", $(this).data("col"));
+        piece.data("row", $(this).data("row"));
+        piece.data("letter", $(this).data("letter"));
+        $(this).append(game.currentMove.currentPiece);
+      } else {
+        wtf(game.currentMove.validMoves.pawn);
+        game.currentMove.initial.append(game.currentMove.currentPiece);
+      }
+      game.currentMove.currentPiece = 0;
+      console.log($(this).data("letter"), $(this).data("row"));
     });
-    $gamepieces.on( "dragstop", function( event, ui ) {
-      $this = $(this);
-      $thisParent = $this.parent();
-      $this.data("col", $thisParent.data("col"));
-      $this.data("letter", $thisParent.data("letter"));
-      $this.data("row", $thisParent.data("row"));
-      game.currentMove.target = {
-        col: $this.data("col"),
-        row: $this.data("row"),
-        letter: $this.data("letter")
-      };
-    });
+
   }
 
 });
