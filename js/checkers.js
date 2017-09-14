@@ -6,31 +6,33 @@ $(document).ready(function() {
     rows: 8,
     rowsOfPieces: 3,
     players: ["black"],
-    player: "red",
+    player: "black",
     currentMove: {
       currentPiece: 0,
       initial: 0,
       target: {col: 0, letter: 0, row: 0},
+      targetCell: $("td"),
       jumpedPiece: 0,
       validMove: false,
       validJump: false,
+      moved: false,
+      jumped: false,
       validMoves: {
         pawn: {
           left: {col: 6, row: 5},
-          right: {col: 4, row: 5},
+          right: {col: 4, row: 5}
         },
         king: {
           frontLeft: {col: 0, row: 0},
           frontRight: {col: 0, row: 0},
           backLeft: {col: 0, row: 0},
-          backRight: {col: 0, row: 0},
-
+          backRight: {col: 0, row: 0}
         }
       },
       validJumps: {
         pawn: {
           left: {col: 0, row: 0, jumpedPiece: {col: 0, row: 0}},
-          right: {col: 0, row: 0, jumpedPiece: {col: 0, row: 0}},
+          right: {col: 0, row: 0, jumpedPiece: {col: 0, row: 0}}
         },
         king: {
           frontLeft: {col: 0, row: 0, jumpedPiece: {col: 0, row: 0}},
@@ -170,9 +172,9 @@ $(document).ready(function() {
       $row = $this.data("row");
       $col = $this.data("col");
       if ($row === 1 || $row === 2 || $row === 3) {
-        $this.wrapInner("<div class='gamepiece king red-gamepiece red-king'>");
+        $this.wrapInner("<div class='gamepiece pawn red-gamepiece red-pawn'>");
       } else if ($row === 6 || $row === 7 || $row === 8) {
-        $this.wrapInner("<div class='gamepiece king black-gamepiece black-king'>");
+        $this.wrapInner("<div class='gamepiece pawn black-gamepiece black-pawn'>");
       }
     });
     $gamepieces = $(".gamepiece");
@@ -183,15 +185,6 @@ $(document).ready(function() {
       $this.data("letter", $thisParent.data("letter"));
       $this.data("row", $thisParent.data("row"));
     });
-
-    function takeTurn($elem) {
-      // check current move against valid moves
-      // set player if legal move
-      // set draggable gamepieces if legal move
-
-      var initial = game.currentMove.initial;
-      var target = game.currentMove.target;
-    }
 
     function getValidMoves() {
       var currentPiece = game.currentMove.currentPiece;
@@ -357,26 +350,51 @@ $(document).ready(function() {
 
     function resetValidMoves() {
       var valid = game.currentMove.validMoves
-      // console.log(valid);
       for (moveType in valid) {
-        // console.log(moveType);
-        for (move in moveType) {
-          // console.log(move);
-          valid[moveType[move]] = -1;
+        if (!valid.hasOwnProperty(moveType)) continue;
+        var moveType = valid[moveType];
+        for (var move in moveType) {
+          if (!moveType.hasOwnProperty(move)) continue;
+          moveType[move] = -1;
         }
       }
     }
-    var $tdValid = $(".tbody-tr:nth-child(even) td:nth-child(odd), .tbody-tr:nth-child(odd) td:nth-child(even)");
-    $(".gamepiece").draggable();
-    $tdValid.droppable();
+    // var $tdValid = $(".tbody-tr:nth-child(even) td:nth-child(odd), .tbody-tr:nth-child(odd) td:nth-child(even)");
+    // $(".gamepiece").draggable( {
+    //   revert: "invalid"
+    // });
+    // $tdValid.droppable();
+    //
+    // game.currentMove.targetCell.droppable({
+    //   drop: function(event, ui) {
+    //     var $this = $(this);
+    //
+    //     // $this.addClass("ui-state-highlight");
+    //     $this.append(ui.draggable);
+    //
+    //     var width = $this.width();
+    //     var height = $this.height();
+    //     var cntrLeft = width / 2 - ui.draggable.width() / 2;// + left;
+    //     var cntrTop = height / 2 - ui.draggable.height() / 2;// + top;
+    //
+    //     ui.draggable.css({
+    //         left: cntrLeft + "px",
+    //         top: cntrTop + "px"
+    //     });
+    //   }
+    // });
+
 
     // EVENTS
     // 1. Dragstart
     $gamepieces.on("mousedown", function() {
       game.currentMove.currentPiece = $(this);
       game.currentMove.initial = $(this).parent();
-      getValidMoves();
-      //$(this).detach();
+      if (game.currentMove.moved) {}
+      else {
+        getValidMoves();
+        $(this).detach();
+      }
     });
 
     // 2. Hover
@@ -400,9 +418,12 @@ $(document).ready(function() {
       var validMove = function() {
         for (var move in validMoves) {
           if (validMoves[move].col === target.col && validMoves[move].row === target.row) {
+            //game.currentMove.targetCell = $(this);
+            game.currentMove.moved = true;
             return true;
           }
         }
+        //game.currentMove.currentPiece.draggable("option", "revert", true);
         return false;
       }
       var validJump = function() {
@@ -416,8 +437,8 @@ $(document).ready(function() {
               if ($gamePiece.hasClass(game.player + "-gamepiece")) {
                 return false
               } else {
-                console.log($gamePiece);
                 game.currentMove.jumpedPiece = $gamePiece;
+                game.currentMove.jumped = true;
                 return true;
               }
             }
@@ -443,19 +464,24 @@ $(document).ready(function() {
         if (game.currentMove.validJump) {
           game.currentMove.jumpedPiece.remove();
         }
-        switch (game.player) {
-          case "red":
-            game.player = "black";
-            break;
-          case "black":
-            game.player = "red";
-            break;
+        if (game.currentMove.moved) {
+          switch (game.player) {
+            case "red":
+              game.player = "black";
+              break;
+            case "black":
+              game.player = "red";
+              break;
+            }
+          game.currentMove.moved = false;
+          game.currentMove.jumped = false;
+          resetValidMoves();
+          // wtf(game);
+          console.log(game.player + "'s turn!");
         }
       } else {
         game.currentMove.initial.append(game.currentMove.currentPiece);
       }
-      resetValidMoves();
-      console.log($(this).data("letter"), $(this).data("row"));
     });
 
   }
