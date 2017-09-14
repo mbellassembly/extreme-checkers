@@ -11,6 +11,7 @@ $(document).ready(function() {
       currentPiece: 0,
       initial: 0,
       target: {col: 0, letter: 0, row: 0},
+      jumpedPiece: 0,
       validMove: false,
       validJump: false,
       validMoves: {
@@ -199,37 +200,157 @@ $(document).ready(function() {
         var pawn = game.currentMove.validMoves.pawn;
         var pawnJump = game.currentMove.validJumps.pawn;
         if (player === "black") {
-          pawn.right = {col: currentPiece.data("col") - 1, row: currentPiece.data("row") - 1};
-          pawn.left = {col: currentPiece.data("col") + 1, row: currentPiece.data("row") - 1};
-          pawnJump.right = {col: currentPiece.data("col") - 2, row: currentPiece.data("row") - 2};
-          pawnJump.left = {col: currentPiece.data("col") + 2, row: currentPiece.data("row") - 2};
+          pawn.right = {
+            col: currentPiece.data("col") - 1,
+            row: currentPiece.data("row") - 1,
+          };
+          pawn.left = {
+            col: currentPiece.data("col") + 1,
+            row: currentPiece.data("row") - 1
+          };
+          pawnJump.right = {
+            col: currentPiece.data("col") - 2,
+            row: currentPiece.data("row") - 2,
+            jumpedPiece: {
+              col: currentPiece.data("col") - 1,
+              row: currentPiece.data("row") - 1
+            }
+          };
+          pawnJump.left = {
+            col: currentPiece.data("col") + 2,
+            row: currentPiece.data("row") - 2,
+            jumpedPiece: {
+              col: currentPiece.data("col") + 1,
+              row: currentPiece.data("row") - 1
+            }
+          };
         } else if (player === "red") {
-          pawn.right = {col: currentPiece.data("col") - 1, row: currentPiece.data("row") + 1};
-          pawn.left = {col: currentPiece.data("col") + 1, row: currentPiece.data("row") + 1};
-          pawnJump.right = {col: currentPiece.data("col") - 2, row: currentPiece.data("row") + 2};
-          pawnJump.left = {col: currentPiece.data("col") + 2, row: currentPiece.data("row") + 2};
+          pawn.right = {
+            col: currentPiece.data("col") - 1,
+            row: currentPiece.data("row") + 1
+          };
+          pawn.left = {
+            col: currentPiece.data("col") + 1,
+            row: currentPiece.data("row") + 1
+          };
+          pawnJump.right = {
+            col: currentPiece.data("col") - 2,
+            row: currentPiece.data("row") + 2,
+            jumpedPiece: {
+              col: currentPiece.data("col") - 1,
+              row: currentPiece.data("row") + 1
+            }
+          };
+          pawnJump.left = {
+            col: currentPiece.data("col") + 2,
+            row: currentPiece.data("row") + 2,
+            jumpedPiece: {
+              col: currentPiece.data("col") + 1,
+              row: currentPiece.data("row") + 1
+            }
+          };
         }
       } else if (currentPiece.hasClass("king")) {
         var king = game.currentMove.validMoves.king;
         var kingJump = game.currentMove.validJumps.king;
         if (player === "black") {
-          king.frontRight = {col: currentPiece.data("col") - 1, row: currentPiece.data("row") - 1};
-          king.frontLeft = {col: currentPiece.data("col") + 1, row: currentPiece.data("row") - 1};
-          king.backRight = {col: currentPiece.data("col") - 1, row: currentPiece.data("row") + 1};
-          king.backLeft = {col: currentPiece.data("col") + 1, row: currentPiece.data("row") + 1};
-          kingJump.frontRight = {col: currentPiece.data("col") - 2, row: currentPiece.data("row") - 2};
-          kingJump.frontLeft = {col: currentPiece.data("col") + 2, row: currentPiece.data("row") - 2};
-          kingJump.backRight = {col: currentPiece.data("col") - 2, row: currentPiece.data("row") + 2};
-          kingJump.backLeft = {col: currentPiece.data("col") + 2, row: currentPiece.data("row") + 2};
+          king.frontRight = {
+            col: currentPiece.data("col") - 1,
+            row: currentPiece.data("row") - 1
+          };
+          king.frontLeft = {
+            col: currentPiece.data("col") + 1,
+            row: currentPiece.data("row") - 1
+          };
+          king.backRight = {
+            col: currentPiece.data("col") - 1,
+            row: currentPiece.data("row") + 1
+          };
+          king.backLeft = {
+            col: currentPiece.data("col") + 1,
+            row: currentPiece.data("row") + 1
+          };
+          kingJump.frontRight = {
+            col: currentPiece.data("col") - 2,
+            row: currentPiece.data("row") - 2,
+            jumpedPiece: {
+              col: currentPiece.data("col") - 1,
+              row: currentPiece.data("row") - 1
+            }
+          };
+          kingJump.frontLeft = {
+            col: currentPiece.data("col") + 2,
+            row: currentPiece.data("row") - 2,
+            jumpedPiece: {
+              col: currentPiece.data("col") + 1,
+              row: currentPiece.data("row") - 1
+            }
+          };
+          kingJump.backRight = {
+            col: currentPiece.data("col") - 2,
+            row: currentPiece.data("row") + 2,
+            jumpedPiece: {
+              col: currentPiece.data("col") - 1,
+              row: currentPiece.data("row") + 1
+            }
+          };
+          kingJump.backLeft = {
+            col: currentPiece.data("col") + 2,
+            row: currentPiece.data("row") + 2,
+            jumpedPiece: {
+              col: currentPiece.data("col") + 1,
+              row: currentPiece.data("row") + 1
+            }
+          };
         } else if (player === "red") {
-          king.frontRight = {col: currentPiece.data("col") - 1, row: currentPiece.data("row") + 1};
-          king.frontLeft = {col: currentPiece.data("col") + 1, row: currentPiece.data("row") + 1};
-          king.backRight = {col: currentPiece.data("col") - 1, row: currentPiece.data("row") - 1};
-          king.backLeft = {col: currentPiece.data("col") + 1, row: currentPiece.data("row") - 1};
-          kingJump.frontRight = {col: currentPiece.data("col") - 2, row: currentPiece.data("row") + 2};
-          kingJump.frontLeft = {col: currentPiece.data("col") + 2, row: currentPiece.data("row") + 2};
-          kingJump.backRight = {col: currentPiece.data("col") - 2, row: currentPiece.data("row") - 2};
-          kingJump.backLeft = {col: currentPiece.data("col") + 2, row: currentPiece.data("row") - 2};
+          king.frontRight = {
+            col: currentPiece.data("col") - 1,
+            row: currentPiece.data("row") + 1
+          };
+          king.frontLeft = {
+            col: currentPiece.data("col") + 1,
+            row: currentPiece.data("row") + 1
+          };
+          king.backRight = {
+            col: currentPiece.data("col") - 1,
+            row: currentPiece.data("row") - 1
+          };
+          king.backLeft = {
+            col: currentPiece.data("col") + 1,
+            row: currentPiece.data("row") - 1
+          };
+          kingJump.frontRight = {
+            col: currentPiece.data("col") - 2,
+            row: currentPiece.data("row") + 2,
+            jumpedPiece: {
+              col: currentPiece.data("col") - 1,
+              row: currentPiece.data("row") + 1
+            }
+          };
+          kingJump.frontLeft = {
+            col: currentPiece.data("col") + 2,
+            row: currentPiece.data("row") + 2,
+            jumpedPiece: {
+              col: currentPiece.data("col") - 1,
+              row: currentPiece.data("row") - 1
+            }
+          };
+          kingJump.backRight = {
+            col: currentPiece.data("col") - 2,
+            row: currentPiece.data("row") - 2,
+            jumpedPiece: {
+              col: currentPiece.data("col") - 1,
+              row: currentPiece.data("row") - 1
+            }
+          };
+          kingJump.backLeft = {
+            col: currentPiece.data("col") + 2,
+            row: currentPiece.data("row") - 2,
+            jumpedPiece: {
+              col: currentPiece.data("col") + 1,
+              row: currentPiece.data("row") - 1
+            }
+          };
         }
       }
     }
@@ -245,6 +366,9 @@ $(document).ready(function() {
         }
       }
     }
+    var $tdValid = $(".tbody-tr:nth-child(even) td:nth-child(odd), .tbody-tr:nth-child(odd) td:nth-child(even)");
+    $(".gamepiece").draggable();
+    $tdValid.droppable();
 
     // EVENTS
     // 1. Dragstart
@@ -252,7 +376,7 @@ $(document).ready(function() {
       game.currentMove.currentPiece = $(this);
       game.currentMove.initial = $(this).parent();
       getValidMoves();
-      $(this).detach();
+      //$(this).detach();
     });
 
     // 2. Hover
@@ -284,25 +408,41 @@ $(document).ready(function() {
       var validJump = function() {
         for (var jump in validJumps) {
           if (validJumps[jump].col === target.col && validJumps[jump].row === target.row) {
-            return true;
+            // check if there is a jumped piece
+            // need to get piece at position of jumped piece
+            var $jumpedPiece = $("td[data-col="+validJumps[jump].jumpedPiece.col+"][data-row="+validJumps[jump].jumpedPiece.row+"]");
+            var $gamePiece = $jumpedPiece.find($(".gamepiece"))
+            if ($gamePiece.length===1) {
+              if ($gamePiece.hasClass(game.player + "-gamepiece")) {
+                return false
+              } else {
+                console.log($gamePiece);
+                game.currentMove.jumpedPiece = $gamePiece;
+                return true;
+              }
+            }
+            return false;
           }
         }
         return false;
       }
       game.currentMove.validMove = validMove();
       game.currentMove.validJump = validJump();
-    })
+    });
 
     // 4. Dragstop
     //    This will fire if dropped
 
     $tdValid.on("mouseup", function() {
-      if (game.currentMove.validMove) {
+      if (game.currentMove.validMove || game.currentMove.validJump) {
         piece = game.currentMove.currentPiece;
         piece.data("col", $(this).data("col"));
         piece.data("row", $(this).data("row"));
         piece.data("letter", $(this).data("letter"));
         $(this).append(game.currentMove.currentPiece);
+        if (game.currentMove.validJump) {
+          game.currentMove.jumpedPiece.remove();
+        }
         switch (game.player) {
           case "red":
             game.player = "black";
@@ -311,8 +451,6 @@ $(document).ready(function() {
             game.player = "red";
             break;
         }
-      } else if (game.currentMove.validJump) {
-        game.currentMove.initial.append(game.currentMove.currentPiece);
       } else {
         game.currentMove.initial.append(game.currentMove.currentPiece);
       }
