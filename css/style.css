@@ -4,24 +4,33 @@ body {
 }
 
 body * {
-  font-family: sans-serif;
+  font-family: 'Nova Square', cursive;
+}
+
+h1 {
+  font-size: 40px;
 }
 
 table {
   margin: 1em;
   display: inline-block;
   background-color: rgba(255,255,255,1);
-  border: 2px solid rgba(0,0,0,.2);
   padding: 0 50px 50px 0;
-  box-shadow: 2px 6px 6px rgba(0,0,0,.1);
+  box-shadow: -6px 6px 6px rgba(0,0,0,.1);
+  border-collapse: collapse;
 }
 
-table {
+caption {
+  margin: 25px 0 0 50px;
 }
 
 th, td, tr {
   width: 50px;
   height: 50px;
+}
+
+td {
+  border: 1px solid rgba(0,0,0,.1);
 }
 
 tbody:first-child tr:first-child {
@@ -33,7 +42,8 @@ tr:nth-child(even) td:nth-child(odd), tr:nth-child(odd) td:nth-child(even) {
 }
 
 tr:nth-child(even) td:nth-child(even), tr:nth-child(odd) td:nth-child(odd) {
-  background-color: #CC0000;
+  background-color: #f5f5dc;
+  box-shadow: inset 0 0 10px rgba(0,0,0,.5);
 }
 
 div {
