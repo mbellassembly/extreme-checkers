@@ -1,12 +1,15 @@
 $(document).ready(function() {
 
   console.log("document loaded");
+
   var game = {
-    cols: 8,
-    rows: 8,
-    rowsOfPieces: 3,
     players: ["black"],
     player: "black",
+    gameboard: {
+      cols: 8,
+      rows: 8,
+      rowsOfPieces: 3
+    },
     currentMove: {
       currentPiece: 0,
       initial: 0,
@@ -108,10 +111,6 @@ $(document).ready(function() {
     }
   }
 
-  if (localStorage.game === undefined) {
-    localStorage.game = JSON.stringify(game);
-  }
-
   function wtf(isThis) {
     ಠ_ಠ = JSON.stringify(isThis, null, 1);
     return console.log("Wtf is " + ಠ_ಠ);
@@ -128,15 +127,15 @@ $(document).ready(function() {
     $h1 = $("<h1>");
     $p = $("<p>");
     $aiButton = $("<button>", {class: "vsAi"});
-    $h1.text("EXTREME CHECKERS");
-    $p.text("SELECT YOUR GAME-MODE");
+    $h1.text("VERY SIMPLE CHECKERS");
+    $p.text("SELECT YOUR GAME-MODE (IF AVAILABLE)");
     $aiButton;
     $header.append($h1);
     $header.append($p);
   }
   function buildMain() {
     game.players.forEach(function(player) {
-      generateBoard(player, game.cols, game.rows);
+      generateBoard(player, game.gameboard.cols, game.gameboard.rows);
     });
     generateGamePieces();
   }
@@ -169,6 +168,7 @@ $(document).ready(function() {
     $main.append($table);
     $table.append($caption);
     $caption.append($("<h2>" + player.toUpperCase() + "'S BOARD</h2>"));
+    $caption.append($("<h4>" + game.player.toUpperCase() + "'S TURN</h4>"));
     $table.append($thead).append($tbody);
     $thead.append($theadtr);
     $tbody.append($tbodytr);
@@ -412,25 +412,68 @@ $(document).ready(function() {
       }
     }
 
-    function resetValidMoves() {
-      var valid = game.currentMove.validMoves
-      for (moveType in valid) {
-        if (!valid.hasOwnProperty(moveType)) continue;
-        var moveType = valid[moveType];
-        for (var move in moveType) {
-          if (!moveType.hasOwnProperty(move)) continue;
-          moveType[move] = -1;
+    function additionalJumps() {
+      if (game.currentPiece) {};
+      return false;
+    }
+
+    function targetHasPiece() {
+      if (game.currentMove.target) {};
+      return false;
+    }
+
+    var validMove = function(validMoves, target) {
+      for (var move in validMoves) {
+        if (validMoves[move].col === target.col && validMoves[move].row === target.row) {
+          if (game.currentMove.targetCell.children().length > 0) {
+            return false;
+          }
+          game.currentMove.moved = true;
+          return true;
         }
       }
+      //game.currentMove.currentPiece.draggable("option", "revert", true);
+      return false;
+    }
+
+    var validJump = function(validJumps, target) {
+      for (var jump in validJumps) {
+        if (validJumps[jump].col === target.col && validJumps[jump].row === target.row) {
+          // check if there is a jumped piece
+          // need to get piece at position of jumped piece
+          var $jumpedPiece = $("td[data-col="+validJumps[jump].jumpedPiece.col+"][data-row="+validJumps[jump].jumpedPiece.row+"]");
+          var $gamePiece = $jumpedPiece.find($(".gamepiece"))
+          if ($gamePiece.length===1) {
+            if ($gamePiece.hasClass(game.player + "-gamepiece")) {
+              return false
+            } else {
+              game.currentMove.jumpedPiece = $gamePiece;
+              game.currentMove.jumped = true;
+              return true;
+            }
+          }
+          return false;
+        }
+      }
+      return false;
     }
 
     // EVENTS
     // 1. Dragstart
-    $gamepieces.on("mousedown", function() {
-      game.currentMove.currentPiece = $(this);
-      game.currentMove.initial = $(this).parent();
-      if (game.currentMove.moved) {}
-      else {
+    $gamepieces.on("mousedown", function(e) {
+
+      // prevent text selection
+      e=e || window.event;
+      pauseEvent(e);
+      function pauseEvent(e) {
+        if (e.preventDefault) e.preventDefault();
+      }
+
+      if (game.currentMove.moved) {
+
+      } else if ($(this).hasClass(game.player + "-gamepiece")) {
+        game.currentMove.currentPiece = $(this);
+        game.currentMove.initial = $(this).parent();
         getValidMoves();
         $(this).detach();
       }
@@ -454,77 +497,92 @@ $(document).ready(function() {
       }
       var target = game.currentMove.target;
       target = {col: $(this).data("col"), row: $(this).data("row"), letter: $(this).data("letter")}
-      var validMove = function() {
-        for (var move in validMoves) {
-          if (validMoves[move].col === target.col && validMoves[move].row === target.row) {
-            //game.currentMove.targetCell = $(this);
-            game.currentMove.moved = true;
-            return true;
-          }
-        }
-        //game.currentMove.currentPiece.draggable("option", "revert", true);
-        return false;
-      }
-      var validJump = function() {
-        for (var jump in validJumps) {
-          if (validJumps[jump].col === target.col && validJumps[jump].row === target.row) {
-            // check if there is a jumped piece
-            // need to get piece at position of jumped piece
-            var $jumpedPiece = $("td[data-col="+validJumps[jump].jumpedPiece.col+"][data-row="+validJumps[jump].jumpedPiece.row+"]");
-            var $gamePiece = $jumpedPiece.find($(".gamepiece"))
-            if ($gamePiece.length===1) {
-              if ($gamePiece.hasClass(game.player + "-gamepiece")) {
-                return false
-              } else {
-                game.currentMove.jumpedPiece = $gamePiece;
-                game.currentMove.jumped = true;
-                return true;
-              }
-            }
-            return false;
-          }
-        }
-        return false;
-      }
-      game.currentMove.validMove = validMove();
-      game.currentMove.validJump = validJump();
+      game.currentMove.targetCell = $(this);
+      game.currentMove.validMove = validMove(validMoves, target);
+      game.currentMove.validJump = validJump(validJumps, target);
     });
 
     // 4. Dragstop
     //    This will fire if dropped
-
     $tdValid.on("mouseup", function() {
       if (game.currentMove.validMove || game.currentMove.validJump) {
-        piece = game.currentMove.currentPiece;
-        piece.data("col", $(this).data("col"));
-        piece.data("row", $(this).data("row"));
-        piece.data("letter", $(this).data("letter"));
-        $(this).append(game.currentMove.currentPiece);
+        updateGamePieceDataTo(this);
         if (game.currentMove.validJump) {
           game.currentMove.jumpedPiece.remove();
         }
-        console.log()
         if (game.currentMove.moved) {
-          switch (game.player) {
-            case "red":
-              game.player = "black";
-              break;
-            case "black":
-              game.player = "red";
-              break;
+          if (game.currentMove.jumped) {
+            if (additionalJumps()) {
+              // DO NOTHING
+            } else {
+              console.log("jumped");
+              switchTurn();
             }
-          game.currentMove.moved = false;
-          game.currentMove.jumped = false;
-          game.currentMove.initial = 0;
-          game.currentMove.currentPiece = 0;
-          resetValidMoves();
-          // wtf(game);
-          console.log(game.player + "'s turn!");
+          } else {
+            console.log("moved");
+            switchTurn();
+          }
         }
       } else {
+        try {
+          game.currentMove.initial.append(game.currentMove.currentPiece);
+          resetCurrentMoveValues();
+        } catch(err) {
+          console.log("Not a valid play area");
+        }
+      }
+      // localStorage.setItem("game", JSON.stringify(game));
+    });
+    $("body *").not($tdValid).on("mouseup", function() {
+      try {
         game.currentMove.initial.append(game.currentMove.currentPiece);
+        resetCurrentMoveValues();
+      } catch(err) {
+        console.log("Not a valid play area");
       }
     });
+
+    function switchTurn() {
+      switch (game.player) {
+        case "red":
+          game.player = "black";
+          break;
+        case "black":
+          game.player = "red";
+          break;
+      }
+      resetCurrentMoveValues();
+      $("caption h4").text(game.player.toUpperCase() + "'S TURN");
+      // update turn heading under player's board heading
+    }
+
+    function updateGamePieceDataTo(thistd) {
+      piece = game.currentMove.currentPiece;
+      piece.data("col", $(thistd).data("col"));
+      piece.data("row", $(thistd).data("row"));
+      piece.data("letter", $(thistd).data("letter"));
+      $(thistd).append(game.currentMove.currentPiece);
+    }
+
+    function resetCurrentMoveValues() {
+      game.currentMove.moved = false;
+      game.currentMove.jumped = false;
+      game.currentMove.initial = 0;
+      game.currentMove.currentPiece = 0;
+      resetValidMoves();
+    }
+
+    function resetValidMoves() {
+      var valid = game.currentMove.validMoves
+      for (moveType in valid) {
+        if (!valid.hasOwnProperty(moveType)) continue;
+        var moveType = valid[moveType];
+        for (var move in moveType) {
+          if (!moveType.hasOwnProperty(move)) continue;
+          moveType[move] = -1;
+        }
+      }
+    }
 
   }
 
