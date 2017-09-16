@@ -28,12 +28,16 @@ function buildHeader() {
   $header = $("header");
   $h1 = $("<h1>");
   $p = $("<p>");
+  $button = $("<button>")
   $aiButton = $("<button>", {class: "vsAi"});
   $h1.text("VERY SIMPLE CHECKERS");
   $p.text("SELECT YOUR GAME-MODE (IF AVAILABLE)");
+  $button.text("START GAME");
+  $button.addClass("start-game");
   $aiButton;
   $header.append($h1);
   $header.append($p);
+  $header.append($button);
 }
 function buildMain() {
   game.players.forEach(function(player) {
@@ -59,11 +63,12 @@ function generateBoard(player, cols, rows) {
   }
 
   var $main = $("main");
-  var $table = $("<table>", {class: "gameboard " + player});
+  var $table = $("<table>", {class: "gameboard gameboard-" + player});
   var $caption = $("<caption>");
   var $thead = $("<thead>", {class: "thead"});
   var $tbody = $("<tbody>", {class: "tbody"});
   var $theadtr = $("<tr>", {class: "thead-tr"});
+  var $graveyard = $("<div>", {class: "graveyard"});
 
   $main.append($table);
   $table.append($caption);
@@ -72,6 +77,7 @@ function generateBoard(player, cols, rows) {
   $table.append($thead).append($tbody);
   $thead.append($theadtr);
   $tbody.append($tbodytr);
+  $main.append($graveyard);
 
   if (player === "black") {
     for (var i = 0; i < cols + 1; i++) {
@@ -136,9 +142,9 @@ function generateGamePieces() {
     $row = $this.data("row");
     $col = $this.data("col");
     if ($row === 1 || $row === 2 || $row === 3) {
-      $this.wrapInner("<div class='gamepiece king red-gamepiece red-king'>");
+      $this.wrapInner("<div class='gamepiece red pawn red-gamepiece red-pawn'>");
     } else if ($row === 6 || $row === 7 || $row === 8) {
-      $this.wrapInner("<div class='gamepiece king black-gamepiece black-king'>");
+      $this.wrapInner("<div class='gamepiece black pawn black-gamepiece black-pawn'>");
     }
   });
   $gamepieces = $(".gamepiece");

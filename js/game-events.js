@@ -1,13 +1,55 @@
 $(document).ready(function() {
 
-  $(".red-pawn, .red-King").draggable("disable");
-
   $(".gamepiece").draggable({
+    drag: function(event, ui) {
+      if (game.player === "black") {
+        if ($(this).hasClass("black-pawn") || $(this).hasClass("black-king")) {
+          return true;
+        } else {
+          return false;
+        }
+      } else if (game.player === "red") {
+        if ($(this).hasClass("red-pawn") || $(this).hasClass("red-king")) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+    },
     cursor: "move",
     containment: ".tdbody",
     scroll: false,
     revert: true,
     stop: function(event, ui) {
+      var target = game.currentMove.targetCell
+      if (game.currentMove.validMove || game.currentMove.validJump) {
+        updateGamePieceDataTo(target);
+        if (game.currentMove.validJump) {
+          game.currentMove.jumpedPiece.draggable("destroy");
+          game.currentMove.jumpedPiece.hide("explode", 1000);
+          $(".graveyard").append(game.currentMove.jumpedPiece.detach());
+        }
+        if (game.currentMove.moved) {
+          if (game.currentMove.jumped) {
+            if (additionalJumps()) {
+              // DO NOTHING
+            } else {
+              var initial = $(game.currentMove.initial);
+              console.log("jumped from " + [initial.data("letter"), initial.data("row")] + " to " + [target.data("letter"), target.data("row")]);
+              switchTurn();
+            }
+          } else {
+            var initial = $(game.currentMove.initial);
+            console.log("moved from " + [initial.data("letter"), initial.data("row")] + " to " + [target.data("letter"), target.data("row")]);
+            switchTurn();
+          }
+        }
+      }
+      if ($(this).hasClass("black") && $(this).data("row") === 1) {
+        $(this).removeClass("pawn black-pawn").addClass("king black-king");
+      } else if ($(this).hasClass("red") && $(this).data("row") === 8) {
+        $(this).removeClass("pawn red-pawn").addClass("king red-king");
+      }
       if (!$(ui.helper).draggable("option", "revert")) {
       }
       $(ui.helper).draggable("option", "revert", true);
@@ -77,33 +119,27 @@ $(document).ready(function() {
   });
 
   $(game.playableSquares).on("dragstop", function() {
-    if (game.currentMove.validMove || game.currentMove.validJump) {
-      updateGamePieceDataTo(this);
-      if (game.currentMove.validJump) {
-        game.currentMove.jumpedPiece.hide("explode", 1000);
-      }
-      if (game.currentMove.moved) {
-        if (game.currentMove.jumped) {
-          if (additionalJumps()) {
-            // DO NOTHING
-          } else {
-            console.log("jumped from " + [game.currentMove.initial.data("letter"), game.currentMove.initial.data("row")] + " to " + [game.currentMove.target.data("letter"), game.currentMOve.data("row")]);
-            switchTurn();
-          }
-        } else {
-          var initial = $(game.currentMove.initial);
-          var target = $(game.currentMove.targetCell);
-          console.log("moved from " + [initial.data("letter"), initial.data("row")] + " to " + [target.data("letter"), target.data("row")]);
-          switchTurn();
-        }
-      }
-    } else {
-      try {
-        resetCurrentMoveValues();
-      } catch(err) {
-        console.log("Not a valid play area");
-      }
-    }
+
   });
+
+  $(".start-game").on("click", function() {
+    // game.start = true;
+    // $(".gamepiece").draggable("enable");
+    // $(".red-pawn, .red-King").draggable("disable");
+  });
+
+  var switchTurn = function() {
+    switch (game.player) {
+      case "red":
+        game.player = "black";
+        break;
+      case "black":
+        game.player = "red";
+        break;
+    }
+    resetCurrentMoveValues();
+    $("caption h4").text(game.player.toUpperCase() + "'S TURN");
+    // update turn heading under player's board heading
+  }
 
 });

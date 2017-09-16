@@ -9,7 +9,7 @@ var game = {
   playableSquares: ".tbody-tr:nth-child(even) td:nth-child(odd), .tbody-tr:nth-child(odd) td:nth-child(even)",
   gamepieces: ".gamepiece",
   currentMove: {
-    currentPiece: 0,
+    currentPiece: $(""),
     initial: 0,
     target: {
       col: 0,
@@ -22,6 +22,7 @@ var game = {
     validJump: false,
     moved: false,
     jumped: false,
+    additionalJumps: false,
     validMoves: {
       pawn: {
         left: {
