@@ -1,5 +1,7 @@
 $(document).ready(function() {
 
+  $(".red-pawn, .red-King").draggable("disable");
+
   $(".gamepiece").draggable({
     cursor: "move",
     containment: ".tdbody",
@@ -51,7 +53,8 @@ $(document).ready(function() {
 
         ui.draggable.css({
             left: cntrLeft + "px",
-            top: cntrTop + "px"
+            top: cntrTop + "px",
+            "z-index": 0
         });
       } else {
 
@@ -60,7 +63,9 @@ $(document).ready(function() {
   });
 
   $(game.gamepieces).on("dragstart", function(e) {
-
+    $(this).css({
+      "z-index": 1
+    });
     if (game.currentMove.moved) {
 
     } else if ($(this).hasClass(game.player + "-gamepiece")) {
@@ -82,17 +87,18 @@ $(document).ready(function() {
           if (additionalJumps()) {
             // DO NOTHING
           } else {
-            console.log("jumped");
+            console.log("jumped from " + [game.currentMove.initial.data("letter"), game.currentMove.initial.data("row")] + " to " + [game.currentMove.target.data("letter"), game.currentMOve.data("row")]);
             switchTurn();
           }
         } else {
-          console.log("moved");
+          var initial = $(game.currentMove.initial);
+          var target = $(game.currentMove.targetCell);
+          console.log("moved from " + [initial.data("letter"), initial.data("row")] + " to " + [target.data("letter"), target.data("row")]);
           switchTurn();
         }
       }
     } else {
       try {
-        //game.currentMove.initial.append(game.currentMove.currentPiece);
         resetCurrentMoveValues();
       } catch(err) {
         console.log("Not a valid play area");
