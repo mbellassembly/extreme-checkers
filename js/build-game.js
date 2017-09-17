@@ -8,36 +8,20 @@ $(function() {
     revert: "invalid"
   });
 
-  $(game.playableSquares).droppable({
-    // drop: function(event,ui) {
-    //
-    //   var uiElem = $(ui.draggable)[0];
-    //   var uiChecker = $($(ui.draggable)[0]);
-    //   var uiCell = $(this);
-    //
-    //   if (uiCell.find(".gamepiece").length > 0) {
-    //     console.log("nope!");
-    //     return;
-    //   }
-    // }
-  });
-
 });
 
 function buildHeader() {
   $header = $("header");
   $h1 = $("<h1>");
   $p = $("<p>");
-  $button = $("<button>")
-  $aiButton = $("<button>", {class: "vsAi"});
+  $start = $("<button>", {text: "START GAME", class: "start-game"});
+  $reset = $("<button>", {text: "RESET GAME", class: "reset"});
+  $playAI = $("<button>", {text: "PLAY AI", class: "vsai"});
   $h1.text("VERY SIMPLE CHECKERS");
   $p.text("SELECT YOUR GAME-MODE (IF AVAILABLE)");
-  $button.text("START GAME");
-  $button.addClass("start-game");
-  $aiButton;
   $header.append($h1);
   $header.append($p);
-  $header.append($button);
+  $header.append($start).append($reset).append($playAI);
 }
 function buildMain() {
   game.players.forEach(function(player) {
@@ -72,8 +56,8 @@ function generateBoard(player, cols, rows) {
 
   $main.append($table);
   $table.append($caption);
-  $caption.append($("<h2>" + player.toUpperCase() + "'S BOARD</h2>"));
-  $caption.append($("<h4>" + game.player.toUpperCase() + "'S TURN</h4>"));
+  //$caption.append($("<h2>" + player.toUpperCase() + "'S BOARD</h2>"));
+  $caption.append($("<h2>" + game.player.toUpperCase() + "'S TURN</h4>"));
   $table.append($thead).append($tbody);
   $thead.append($theadtr);
   $tbody.append($tbodytr);
@@ -142,9 +126,9 @@ function generateGamePieces() {
     $row = $this.data("row");
     $col = $this.data("col");
     if ($row === 1 || $row === 2 || $row === 3) {
-      $this.wrapInner("<div class='gamepiece red pawn red-gamepiece red-pawn'>");
+      $this.wrapInner("<div class='gamepiece red pawn'>");
     } else if ($row === 6 || $row === 7 || $row === 8) {
-      $this.wrapInner("<div class='gamepiece black pawn black-gamepiece black-pawn'>");
+      $this.wrapInner("<div class='gamepiece black pawn'>");
     }
   });
   $gamepieces = $(".gamepiece");

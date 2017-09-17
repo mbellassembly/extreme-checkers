@@ -1,15 +1,14 @@
 $(document).ready(function() {
-
   $(".gamepiece").draggable({
     drag: function(event, ui) {
       if (game.player === "black") {
-        if ($(this).hasClass("black-pawn") || $(this).hasClass("black-king")) {
+        if ($(this).hasClass("black")) {
           return true;
         } else {
           return false;
         }
       } else if (game.player === "red") {
-        if ($(this).hasClass("red-pawn") || $(this).hasClass("red-king")) {
+        if ($(this).hasClass("red")) {
           return true;
         } else {
           return false;
@@ -20,43 +19,62 @@ $(document).ready(function() {
     containment: ".tdbody",
     scroll: false,
     revert: true,
+    start: function(event, ui) {
+      console.log(game.currentMove.currentPiece);
+      $(this).css({
+        "z-index": 1
+      });
+      if (game.currentMove.moved) {
+
+      } else {
+        game.currentMove.currentPiece = $(this);
+        // game.currentMove.initial = $(this).parent();
+        getValidMoves();
+      }
+    },
     stop: function(event, ui) {
-      var target = game.currentMove.targetCell
-      if (game.currentMove.validMove || game.currentMove.validJump) {
-        updateGamePieceDataTo(target);
-        if (game.currentMove.validJump) {
-          game.currentMove.jumpedPiece.draggable("destroy");
-          game.currentMove.jumpedPiece.hide("explode", 1000);
-          $(".graveyard").append(game.currentMove.jumpedPiece.detach());
-        }
-        if (game.currentMove.moved) {
-          if (game.currentMove.jumped) {
-            if (additionalJumps()) {
-              // DO NOTHING
+      if ($(this).draggable("option", "revert")) {
+        console.log($(this));
+      }
+      else {
+        console.log(game.currentMove.currentPiece);
+        var target = game.currentMove.targetCell
+        if (game.currentMove.validMove || game.currentMove.validJump) {
+          updateGamePieceDataTo(target);
+          if (game.currentMove.validJump) {
+            game.currentMove.jumpedPiece.draggable("destroy");
+            game.currentMove.jumpedPiece.hide("explode", 1000);
+            $(".graveyard").append(game.currentMove.jumpedPiece.detach());
+          }
+          if (game.currentMove.moved) {
+            if (game.currentMove.jumped) {
+              if (additionalJumps()) {
+                // DO NOTHING
+              } else {
+                var initial = $(game.currentMove.initial);
+                console.log("jumped from " + [initial.data("letter"), initial.data("row")] + " to " + [target.data("letter"), target.data("row")]);
+                switchTurn();
+              }
             } else {
               var initial = $(game.currentMove.initial);
-              console.log("jumped from " + [initial.data("letter"), initial.data("row")] + " to " + [target.data("letter"), target.data("row")]);
+              console.log("moved from " + [initial.data("letter"), initial.data("row")] + " to " + [target.data("letter"), target.data("row")]);
               switchTurn();
             }
-          } else {
-            var initial = $(game.currentMove.initial);
-            console.log("moved from " + [initial.data("letter"), initial.data("row")] + " to " + [target.data("letter"), target.data("row")]);
-            switchTurn();
           }
         }
+        if ($(this).hasClass("black") && $(this).data("row") === 1) {
+          $(this).removeClass("pawn black-pawn").addClass("king black-king");
+        } else if ($(this).hasClass("red") && $(this).data("row") === 8) {
+          $(this).removeClass("pawn red-pawn").addClass("king red-king");
+        }
+        if (!$(ui.helper).draggable("option", "revert")) {
+        }
+        $(ui.helper).draggable("option", "revert", true);
       }
-      if ($(this).hasClass("black") && $(this).data("row") === 1) {
-        $(this).removeClass("pawn black-pawn").addClass("king black-king");
-      } else if ($(this).hasClass("red") && $(this).data("row") === 8) {
-        $(this).removeClass("pawn red-pawn").addClass("king red-king");
-      }
-      if (!$(ui.helper).draggable("option", "revert")) {
-      }
-      $(ui.helper).draggable("option", "revert", true);
     }
   });
 
-  $(game.playableSquares).droppable({
+  $("td").droppable({
     over: function(event, ui) {
       if (game.currentMove.currentPiece.hasClass("pawn")) {
         var validMoves = game.currentMove.validMoves.pawn;
@@ -65,12 +83,11 @@ $(document).ready(function() {
         var validMoves = game.currentMove.validMoves.king;
         var validJumps = game.currentMove.validJumps.king;
       }
-
-      var target = game.currentMove.target;
-      target = {col: $(this).data("col"), row: $(this).data("row"), letter: $(this).data("letter")}
-      game.currentMove.targetCell = $(this);
+      var target = {col: $(this).data("col"), row: $(this).data("row"), letter: $(this).data("letter")};
       game.currentMove.validMove = validMove(validMoves, target);
-      game.currentMove.validJump = validJump(validJumps, target);
+      game.currentMove.validJump = validJump(validJumps, target)
+      game.currentMove.target = target;
+      game.currentMove.targetCell = $(this);
       // console.log("over something");
     },
     drop: function(event,ui) {
@@ -104,31 +121,22 @@ $(document).ready(function() {
     }
   });
 
-  $(game.gamepieces).on("dragstart", function(e) {
-    $(this).css({
-      "z-index": 1
-    });
-    if (game.currentMove.moved) {
-
-    } else if ($(this).hasClass(game.player + "-gamepiece")) {
-      game.currentMove.currentPiece = $(this);
-      game.currentMove.initial = $(this).parent();
-      getValidMoves();
-      //$(this).detach();
-    }
+  $(".reset").on("click", function() {
+    resetBoard();
   });
 
-  $(game.playableSquares).on("dragstop", function() {
-
+  $(".vsai").on("click", function() {
+    // TODO: add AI
   });
 
-  $(".start-game").on("click", function() {
-    // game.start = true;
-    // $(".gamepiece").draggable("enable");
-    // $(".red-pawn, .red-King").draggable("disable");
+  $(".start").on("click", function() {
+    game.start = true;
+    $(".gamepiece").draggable("enable");
+    $(".red-pawn, .red-King").draggable("disable");
   });
 
   var switchTurn = function() {
+
     switch (game.player) {
       case "red":
         game.player = "black";
@@ -138,7 +146,11 @@ $(document).ready(function() {
         break;
     }
     resetCurrentMoveValues();
-    $("caption h4").text(game.player.toUpperCase() + "'S TURN");
+    if (gameover()) {
+      gameoverModal();
+    } else {
+      $("caption h2").text(game.player.toUpperCase() + "'S TURN");
+    }
     // update turn heading under player's board heading
   }
 

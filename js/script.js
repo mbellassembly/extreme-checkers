@@ -198,7 +198,7 @@ var validMove = function(validMoves, target) {
 }
 
 var validJump = function(validJumps, target) {
-  console.log(validJumps);
+  // console.log(validJumps);
   for (var jump in validJumps) {
     if (validJumps[jump].col === target.col && validJumps[jump].row === target.row) {
       // check if there is a jumped piece
@@ -209,7 +209,7 @@ var validJump = function(validJumps, target) {
         console.log("target cell is occupied");
         return false;
       } else if ($gamePiece.length===1) {
-        if ($gamePiece.hasClass(game.player + "-gamepiece")) {
+        if ($gamePiece.hasClass(game.player)) {
           console.log("cannot jump own piece");
           return false
         } else {
@@ -224,12 +224,6 @@ var validJump = function(validJumps, target) {
     }
   }
   return false;
-}
-
-function king() {
-  if (game.player === black) {
-
-  }
 }
 
 function updateGamePieceDataTo(thistd) {
@@ -258,4 +252,22 @@ function resetValidMoves() {
       moveType[move] = -1;
     }
   }
+}
+
+function gameover() {
+  if ($(".graveyard").find("."+game.player).length === 12) {
+    return true;
+  }
+  return false;
+}
+
+function gameoverModal() {
+  $gameover = $("<div>", {id: "gameover", class: "modal"});
+  $gameover.on($.modal.BEFORE_OPEN, function(event, modal) {
+    $winText = $("<h1>", {text: game.player.toUpperCase() + " WINS!!"});
+    $gameover.append($winText);
+    $gameover.append($("<button>", {class: "reset", text: "RESET"}));
+  });
+  $gameover.modal({fadeDuration: 250});
+  $("caption h4").text(game.player.toUpperCase() + " WINS!!");
 }

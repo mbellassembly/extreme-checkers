@@ -1,6 +1,8 @@
 var game = {
   players: ["black"],
   player: "black",
+  playerGamepieces: 12,
+  gameover: false,
   gameboard: {
     cols: 8,
     rows: 8,

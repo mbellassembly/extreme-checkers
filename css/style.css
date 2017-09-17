@@ -37,6 +37,20 @@ tbody:first-child tr:first-child {
   border: none;
 }
 
+button {
+  margin: .5em;
+}
+
+.activecell {
+  box-shadow: inset 5px 5px 5px white;
+}
+
+div.modal {
+  text-align: center;
+  width: auto;
+  height: auto;
+}
+
 tr:nth-child(even) td:nth-child(odd), tr:nth-child(odd) td:nth-child(even) {
   background-color: #36454f;
 }
@@ -62,18 +76,18 @@ div {
   color: #CC0000;
 }
 
-.red-pawn {
+.red.pawn {
   background-image: url("/img/red-pawn.png");
 }
 
-.red-king {
+.red.king {
   background-image: url("/img/red-king.png");
 }
 
-.black-pawn {
+.black.pawn {
   background-image: url("/img/black-pawn.png");
 }
 
-.black-king {
+.black.king {
   background-image: url("/img/black-king.png");
 }
