@@ -1,6 +1,6 @@
 # Eventually Extreme Checkers
 
-![Game Screenshot](/ima/gameboard-screenshot.png)
+![Game Screenshot](/img/gameboard-screenshot.png)
 
 My first shot at a purely javascript/jQuery game. I spent most of my time figuring out how to properly implement my jQuery UI draggable and droppable plugins. The actual game logic seemed pretty straight-forward but the actual implementation and connection of libraries I've never used was difficult. Figuring out how to use options on the plugin instead of event handlers was key in finishing this game. I feel pretty comfortable using external plugins and libraries after working through this project.
 
