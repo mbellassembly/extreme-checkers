@@ -12,7 +12,11 @@ var game = {
   gamepieces: ".gamepiece",
   currentMove: {
     currentPiece: $(""),
-    initial: 0,
+    initial: {
+      col: 0,
+      letter: 0,
+      row: 0
+    },
     target: {
       col: 0,
       letter: 0,

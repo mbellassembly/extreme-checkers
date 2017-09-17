@@ -261,12 +261,93 @@ function gameover() {
   return false;
 }
 
+function switchTurn() {
+
+  switch (game.player) {
+    case "red":
+      game.player = "black";
+      break;
+    case "black":
+      game.player = "red";
+      break;
+  }
+  resetCurrentMoveValues();
+  if (gameover()) {
+    gameoverModal();
+  } else {
+    $("caption h2").text(game.player.toUpperCase() + "'S TURN");
+  }
+  // update turn heading under player's board heading
+}
+
+function resetBoard() {
+  $(".gamepiece").draggable("destroy");
+  $(".gamepiece").remove();
+  generateGamePieces();
+  game.player = "black";
+  $(".gamepiece " + game.player).draggable();
+}
+
+function startHandler(gamepiece) {
+  game.currentMove.initialCell = $(gamepiece).parent();
+  console.log(game.currentMove.currentPiece);
+  $(this).css({
+    "z-index": 1
+  });
+  if (game.currentMove.moved) {
+
+  } else {
+    game.currentMove.currentPiece = $(gamepiece);
+    // game.currentMove.initial = $(this).parent();
+    getValidMoves();
+  }
+}
+
+function stopHandler(gamepiece, ui) {
+  if ($(gamepiece).draggable("option", "revert")) {
+    console.log($(gamepiece));
+  }
+  else {
+    console.log(game.currentMove.currentPiece);
+    var target = game.currentMove.targetCell;
+    var initial = game.currentMove.initialCell;
+    if (game.currentMove.validMove || game.currentMove.validJump) {
+      updateGamePieceDataTo(target);
+      if (game.currentMove.validJump) {
+        game.currentMove.jumpedPiece.draggable("destroy");
+        game.currentMove.jumpedPiece.hide("explode", 1000);
+        $(".graveyard").append(game.currentMove.jumpedPiece.detach());
+      }
+      if (game.currentMove.moved) {
+        if (game.currentMove.jumped) {
+          if (additionalJumps()) {
+            // DO NOTHING
+          } else {
+            var initial = $(game.currentMove.initial);
+            console.log("jumped from " + [initial.data("letter"), initial.data("row")] + " to " + [target.data("letter"), target.data("row")]);
+            switchTurn();
+          }
+        } else {
+          var initial = $(game.currentMove.initial);
+          console.log("moved from " + [initial.data("letter"), initial.data("row")] + " to " + [target.data("letter"), target.data("row")]);
+          switchTurn();
+        }
+      }
+    }
+    if ($(gamepiece).hasClass("black") && $(gamepiece).data("row") === 1) {
+      $(gamepiece).removeClass("pawn black-pawn").addClass("king black-king");
+    } else if ($(gamepiece).hasClass("red") && $(gamepiece).data("row") === 8) {
+      $(gamepiece).removeClass("pawn red-pawn").addClass("king red-king");
+    }
+  }
+}
+
 function gameoverModal() {
   $gameover = $("<div>", {id: "gameover", class: "modal"});
   $gameover.on($.modal.BEFORE_OPEN, function(event, modal) {
     $winText = $("<h1>", {text: game.player.toUpperCase() + " WINS!!"});
     $gameover.append($winText);
-    $gameover.append($("<button>", {class: "reset", text: "RESET"}));
+    $gameover.append($("<button>", {class: "reset", text: "PLAY AGAIN"}));
   });
   $gameover.modal({fadeDuration: 250});
   $("caption h4").text(game.player.toUpperCase() + " WINS!!");
