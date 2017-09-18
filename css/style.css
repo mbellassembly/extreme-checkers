@@ -77,17 +77,17 @@ div {
 }
 
 .red.pawn {
-  background-image: url("/extreme-checkers/img/red-pawn.png");
+  background-image: url("../img/red-pawn.png");
 }
 
 .red.king {
-  background-image: url("/extreme-checkers/img/red-king.png");
+  background-image: url("../img/red-king.png");
 }
 
 .black.pawn {
-  background-image: url("/extreme-checkers/img/black-pawn.png");
+  background-image: url("../img/black-pawn.png");
 }
 
 .black.king {
-  background-image: url("/extreme-checkers/img/black-king.png");
+  background-image: url("../img/black-king.png");
 }

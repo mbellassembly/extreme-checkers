@@ -2,6 +2,7 @@ var game = {
   players: ["black"],
   player: "black",
   playerGamepieces: 12,
+  start: false,
   gameover: false,
   gameboard: {
     cols: 8,
@@ -22,7 +23,7 @@ var game = {
       letter: 0,
       row: 0
     },
-    targetCell: $("td"),
+    targetCell: $("<td>"),
     jumpedPiece: 0,
     validMove: false,
     validJump: false,
@@ -66,6 +67,7 @@ var game = {
           row: 0,
           jumpedPiece: {
             col: 0,
+            letter: 0,
             row: 0
           }
         },
@@ -74,6 +76,7 @@ var game = {
           row: 0,
           jumpedPiece: {
             col: 0,
+            letter: 0,
             row: 0
           }
         }
@@ -84,6 +87,7 @@ var game = {
           row: 0,
           jumpedPiece: {
             col: 0,
+            letter: 0,
             row: 0
           }
         },
@@ -92,6 +96,7 @@ var game = {
           row: 0,
           jumpedPiece: {
             col: 0,
+            letter: 0,
             row: 0
           }
         },
@@ -100,6 +105,7 @@ var game = {
           row: 0,
           jumpedPiece: {
             col: 0,
+            letter: 0,
             row: 0
           }
         },
@@ -108,6 +114,7 @@ var game = {
           row: 0,
           jumpedPiece: {
             col: 0,
+            letter: 0,
             row: 0
           }
         }
