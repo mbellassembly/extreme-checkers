@@ -25,8 +25,7 @@ Core game logic is operational with minimal bugs.
   - Draggable and droppable using jQuery UI was the most difficult part of this project to get my head around and get working. After hitting this wall, researching how to fix it, and coming up with nothing, I ended up buying a whiteboard to write out the logical flow of how it would work:
   ![Whiteboard Picture](/img/whiteboard-1.jpg)
   While this was really helpful to implement for proof of concept without the draggable/droppable, this code ended up being obsolete once I figured out how to actually use the jQuery UI draggable/droppable options (which are describing events).
-  - The whiteboard got a good deal of use afterwards and was pivotal in continuing to work out game logic. I spent the rest of my time trying to plug in a double jump feature to the game. While this was unsuccessful due to time constraints, it is a good jumping off point for when I pick this project back up:
-  ![Whiteboard Picture](/img/whiteboard-2.jpg)
+  - The whiteboard got a good deal of use afterwards and was pivotal in continuing to work out game logic. I spent the rest of my time trying to plug in a double jump feature to the game. While this was unsuccessful due to time constraints, it is a good jumping off point for when I pick this project back up.
 
 - [x] **Creativity:** Did you add a personal spin or creative element into your project submission? Did you deliver something of value to the end user (not just a login button and an index page)?
   - Had an ambitious personal spin that didn't end up coming to fruition. Most of my time was getting the core functionality of dragging/dropping/validating working. Eventually there will be additional gamemodes, score tracking, game log, and local storage utilization. The gamemodes are going to be what makes the overall game deserve its title.
