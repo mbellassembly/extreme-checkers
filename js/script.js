@@ -184,44 +184,41 @@ function targetHasPiece() {
 var validMove = function(validMoves, target) {
   for (var move in validMoves) {
     if (validMoves[move].col === target.col && validMoves[move].row === target.row) {
-      console.log(game.currentMove.targetCell.find(".ui-draggable").length > 0);
-      if (game.currentMove.targetCell.children().length > 0) {
-        console.log("target cell is occupied");
-        return false;
-      } else if (game.currentMove.targetCell.find(".ui-draggable").length > 0) {
-        console.log("cell is occupied");
-        return false;
+      if (game.currentMove.targetCell.find($(".gamepiece")).length > 0) {
+        if (game.currentMove.targetCell.find($(".gamepiece") === $(".ui.dragging"))) {
+          // console.log("valid move");
+          return true;
+        } else {
+          // console.log("move target cell is occupied");
+          return false;
+        }
       }
-      console.log("valid move");
+      // console.log("valid move");
       return true;
     }
   }
-  //game.currentMove.currentPiece.draggable("option", "revert", true);
   // console.log("not a valid move: " + [target.letter, target.row]);
   return false;
 }
 
 var validJump = function(validJumps, target) {
-  // console.log(validJumps);
   for (var jump in validJumps) {
     if (validJumps[jump].col === target.col && validJumps[jump].row === target.row) {
-      // check if there is a jumped piece
-      // need to get piece at position of jumped piece
       var $jumpedPiece = $("td[data-col="+validJumps[jump].jumpedPiece.col+"][data-row="+validJumps[jump].jumpedPiece.row+"]");
       var $gamePiece = $jumpedPiece.find($(".gamepiece"))
-      if (game.currentMove.targetCell.children().length > 0) {
-        console.log("target cell is occupied");
+      if (game.currentMove.targetCell.find($(".gamepiece")).length > 0) {
+        // console.log("jump target cell is occupied");
         return false;
       } else if ($gamePiece.length===1) {
         if ($gamePiece.hasClass(game.player)) {
-          console.log("cannot jump own piece");
+          // console.log("cannot jump own piece");
           return false
         } else {
           game.currentMove.jumpedPiece = $gamePiece;
           return true;
         }
       }
-      console.log("no jumpable piece at " + [$jumpedPiece.data("letter"), $jumpedPiece.data("row")]);
+      // console.log("no jumpable piece at " + [$jumpedPiece.data("letter"), $jumpedPiece.data("row")]);
       return false;
     }
   }
@@ -285,7 +282,9 @@ function switchTurn() {
 function startGame() {
   game.start = true;
   var $h2 = $("<h2>", {text: game.player.toUpperCase() + "'S TURN"});
-  $("caption").append($h2);
+  if ($("caption").find("h2").length === 0) {
+    $("caption").append($h2);
+  }
   generateGamePieces();
   $(".gamepiece").draggable({
     drag: function(event, ui) {
@@ -457,7 +456,7 @@ function gameoverModal() {
   $gameover.on($.modal.BEFORE_OPEN, function(event, modal) {
     $winText = $("<h1>", {text: game.player.toUpperCase() + " WINS!!"});
     $gameover.append($winText);
-    $gameover.append($("<button>", {class: "reset", text: "PLAY AGAIN", rel:"modal:close"}));
+    $gameover.append($("<button>", {class: "reset ui-button ui-widget ui-corner-all", text: "PLAY AGAIN", rel:"modal:close"}));
     $("caption h2").text(game.player.toUpperCase() + " WINS!!");
   });
   $gameover.modal({fadeDuration: 250});

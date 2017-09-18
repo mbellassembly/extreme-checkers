@@ -14,9 +14,9 @@ function buildHeader() {
   $header = $("header");
   $h1 = $("<h1>");
   $p = $("<p>");
-  $start = $("<button>", {text: "START GAME", class: "start"});
-  $reset = $("<button>", {text: "RESET GAME", class: "reset"});
-  $playAI = $("<button>", {text: "PLAY AI", class: "vsai"});
+  $start = $("<button>", {text: "START GAME", class: "start ui-button ui-widget ui-corner-all"});
+  $reset = $("<button>", {text: "RESET GAME", class: "reset ui-button ui-widget ui-corner-all"});
+  $playAI = $("<button>", {text: "PLAY AI", class: "vsai ui-button ui-widget ui-corner-all"});
   $h1.text("EVENTUALLY EXTREME CHECKERS");
   $p.text("SELECT YOUR GAME-MODE (IF AVAILABLE)");
   $header.append($h1);
