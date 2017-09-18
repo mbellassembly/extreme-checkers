@@ -160,19 +160,22 @@ function getValidMoves() {
   }
 }
 
+// needs work
 function additionalJumps() {
-  if (game.currentMove.currentPiece.hasClass("pawn")) {
-    var validJumps = game.currentMove.validJumps.pawn;
-  } else if (game.currentMove.currentPiece.hasClass("king")) {
-    var validJumps = game.currentMove.validJumps.king;
-  }
-  for (jump in validJumps) {
-    if (validJump(validJumps, validJumps[jump])) {
-      console.log("WINNER!!");
-      console.log(validJumps[jump]);
-      return true;
-    }
-  }
+  // getValidMoves();
+  // if (game.currentMove.currentPiece.hasClass("pawn")) {
+  //   var validJumps = game.currentMove.validJumps.pawn;
+  // } else if (game.currentMove.currentPiece.hasClass("king")) {
+  //   var validJumps = game.currentMove.validJumps.king;
+  // }
+  // for (jump in validJumps) {
+  //   console.log([validJumps[jump].col, validJumps[jump].row]);
+  //   var occupied = $("td[data-col="+validJumps[jump].col+"][data-row="+validJumps[jump].row+"]").find($(".gamepiece")).length > 0;
+  //   console.log(occupied);
+  //   if (!occupied) {
+  //     return true;
+  //   }
+  // }
   return false;
 }
 
@@ -205,7 +208,7 @@ var validJump = function(validJumps, target) {
   for (var jump in validJumps) {
     if (validJumps[jump].col === target.col && validJumps[jump].row === target.row) {
       var $jumpedPiece = $("td[data-col="+validJumps[jump].jumpedPiece.col+"][data-row="+validJumps[jump].jumpedPiece.row+"]");
-      var $gamePiece = $jumpedPiece.find($(".gamepiece"))
+      var $gamePiece = $jumpedPiece.find($(".gamepiece"));
       if (game.currentMove.targetCell.find($(".gamepiece")).length > 0) {
         // console.log("jump target cell is occupied");
         return false;
@@ -316,7 +319,6 @@ function startGame() {
       game.currentMove.validJump = validJump(validJumps, target)
       game.currentMove.target = target;
       game.currentMove.targetCell = $(this);
-      // console.log("over something");
     },
     drop: function(event,ui) {
       $this = $(this);
@@ -403,8 +405,9 @@ function startHandler(gamepiece, ui) {
   $(gamepiece).css({
     "z-index": 1
   });
-  if (game.currentMove.moved) {
+  if (game.currentMove.moved && !game.currentMove.jumped) {
     console.log("already moved");
+    switchTurn();
   } else {
     game.currentMove.currentPiece = $(gamepiece);
     // game.currentMove.initial = $(this).parent();
@@ -429,7 +432,8 @@ function stopHandler(gamepiece, ui) {
       if (game.currentMove.moved) {
         if (game.currentMove.jumped) {
           if (additionalJumps()) {
-            // DO NOTHING
+            game.currentMove.additionalJumps = true;
+            return;
           } else {
             console.log("jumped from " + [initial.data("letter"), initial.data("row")] + " to " + [target.data("letter"), target.data("row")]);
             switchTurn();

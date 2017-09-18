@@ -18,7 +18,7 @@ function buildHeader() {
   $reset = $("<button>", {text: "RESET GAME", class: "reset ui-button ui-widget ui-corner-all"});
   $playAI = $("<button>", {text: "PLAY AI", class: "vsai ui-button ui-widget ui-corner-all"});
   $h1.text("EVENTUALLY EXTREME CHECKERS");
-  $p.text("SELECT YOUR GAME-MODE (IF AVAILABLE)");
+  // $p.text("SELECT YOUR GAME-MODE (IF AVAILABLE)");
   $header.append($h1);
   $header.append($p);
   $header.append($start).append($reset).append($playAI);
@@ -32,7 +32,7 @@ function buildMain() {
 function buildFooter() {
   $footer = $("footer");
   $h4 = $("<h4>");
-  $h4.html("&copy;" + " Matthew Bell aka Foozie3Moons");
+  $h4.html("&copy;" + " 2017 - FOOZIE3MOONS - MATTHEW BELL");
   $footer.append($h4);
 }
 
