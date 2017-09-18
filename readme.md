@@ -4,9 +4,9 @@
 
 My first shot at a purely javascript/jQuery game. I spent most of my time figuring out how to properly implement my jQuery UI draggable and droppable plugins. The actual game logic seemed pretty straight-forward but the actual implementation and connection of libraries I've never used was difficult. Figuring out how to use options on the plugin instead of event handlers was key in finishing this game. I feel pretty comfortable using external plugins and libraries after working through this project.
 
-Core game logic is operational. Still a work in progress.
+Core game logic is operational with minimal bugs. Still a work in progress.
 
-Estimated time spent: **70 hours**
+Estimated time spent over one week: **80 hours**
 
 ## Technical Requirements
 
@@ -21,21 +21,24 @@ Estimated time spent: **70 hours**
 
 ## Technologies Used
 
+- HTML/CSS
+- Javascript
 - jQuery
 - [jQuery UI] (https://jqueryui.com/)
 - [jquery Modal] (https://github.com/kylefox/jquery-modal)
 
 ## Additional Features/Optimizations
 
-- [] AI implementation (easy, moderate, and difficult)
-- [] Side-by-side board when playing PvP on same computer
-- [] Jquery UI draggable affects change in opposite board
-- [] Additional gamemodes (where the extreme comes in) such as side-by-side checkers vs AI ()
-- [] Highlight valid moves
-- [] Finish double-jump logic
-- [] Add a side-log to show move-history
-- [] Refactor some code to reduce
+- [ ] AI implementation (easy, moderate, and difficult)
+- [ ] Side-by-side board when playing PvP on same computer
+- [ ] Jquery UI draggable affects change in opposite board
+- [ ] Additional gamemodes (where the extreme comes in) such as side-by-side checkers vs AI ()
+- [ ] Highlight valid moves
+- [ ] Finish double-jump logic
+- [ ] Add a side-log to show move-history
+- [ ] Refactor some code to increase readability and flow of the program
 
 ## Bugs
 
-- [] Hovering over a valid cell with one piece, not actually moving the piece, and then selecting another piece with the same valid move, and moving that piece will move both pieces.
+- [x] Hovering over a valid cell with one piece, not actually moving the piece, and then selecting another piece with the same valid move, and moving that piece will move both pieces.
+  - This was an issue with newer code. Reverted code to a previous version and the game is now validating correctly.
