@@ -1,3 +1,104 @@
+// start and reset logic
+
+function start() {
+  game.start = true;
+  var $h2 = $("<h2>", {text: game.player.toUpperCase() + "'S TURN"});
+  if ($("caption").find("h2").length === 0) {
+    $("caption").append($h2);
+  }
+  generateGamePieces();
+  $(".gamepiece").draggable({
+    drag: function(event, ui) {
+      return dragHandler(this, ui);
+    },
+    cursor: "move",
+    containment: ".tdbody",
+    scroll: false,
+    revert: true,
+    start: function(event, ui) {
+      startHandler(this, ui);
+    },
+    stop: function(event, ui) {
+      stopHandler(this, ui);
+    }
+  });
+
+  $("td").droppable({
+    over: function(event, ui) {
+      if (game.currentMove.currentPiece.hasClass("pawn")) {
+        var validMoves = game.currentMove.validMoves.pawn;
+        var validJumps = game.currentMove.validJumps.pawn;
+      } else if (game.currentMove.currentPiece.hasClass("king")) {
+        var validMoves = game.currentMove.validMoves.king;
+        var validJumps = game.currentMove.validJumps.king;
+      }
+      var target = {col: $(this).data("col"), row: $(this).data("row"), letter: $(this).data("letter")};
+      game.currentMove.validMove = validMove(validMoves, target);
+      game.currentMove.validJump = validJump(validJumps, target)
+      game.currentMove.target = target;
+      game.currentMove.targetCell = $(this);
+    },
+    drop: function(event,ui) {
+      var $this = $(this);
+
+      if ($this.find(".gamepiece").length > 0) {
+        // console.log("nope!");
+        return false;
+      } else if (game.currentMove.validMove || game.currentMove.validJump) {
+        ui.draggable.draggable("option", "revert", false);
+
+        $this.append(ui.draggable);
+
+        var width = $this.width();
+        var height = $this.height();
+
+        var cntrLeft = width / 2 - ui.draggable.width() / 2;// + left;
+        var cntrTop = height / 2 - ui.draggable.height() / 2;// + top;
+
+        ui.draggable.css({
+            left: cntrLeft + "px",
+            top: cntrTop + "px",
+            "z-index": 0
+        });
+        if (game.currentMove.validMove) {
+          game.currentMove.moved = true;
+        } else if (game.currentMove.validJump) {
+          game.currentMove.moved = true;
+          game.currentMove.jumped = true;
+        }
+      } else {
+
+      }
+    }
+  });
+}
+
+function reset() {
+  if (game.start) {
+    $(".gamepiece").remove();
+    generateGamePieces();
+    game.player = "black";
+    $("caption h2").text(game.player.toUpperCase() + "'S TURN")
+    $(".gamepiece").draggable({
+      drag: function(event, ui) {
+        return dragHandler(this, ui);
+      },
+      cursor: "move",
+      containment: ".tdbody",
+      scroll: false,
+      revert: true,
+      start: function(event, ui) {
+        startHandler(this, ui);
+      },
+      stop: function(event, ui) {
+        stopHandler(this, ui);
+      }
+    });
+  }
+}
+
+// valid move/jump logic
+
 function getValidMoves() {
   var currentPiece = game.currentMove.currentPiece;
   var player = game.player;
@@ -160,47 +261,23 @@ function getValidMoves() {
   }
 }
 
-// needs work
-function additionalJumps() {
-  // getValidMoves();
-  // if (game.currentMove.currentPiece.hasClass("pawn")) {
-  //   var validJumps = game.currentMove.validJumps.pawn;
-  // } else if (game.currentMove.currentPiece.hasClass("king")) {
-  //   var validJumps = game.currentMove.validJumps.king;
-  // }
-  // for (jump in validJumps) {
-  //   console.log([validJumps[jump].col, validJumps[jump].row]);
-  //   var occupied = $("td[data-col="+validJumps[jump].col+"][data-row="+validJumps[jump].row+"]").find($(".gamepiece")).length > 0;
-  //   console.log(occupied);
-  //   if (!occupied) {
-  //     return true;
-  //   }
-  // }
-  return false;
-}
-
-function targetHasPiece() {
-  if (game.currentMove.target) {};
-  return false;
-}
-
 var validMove = function(validMoves, target) {
   for (var move in validMoves) {
     if (validMoves[move].col === target.col && validMoves[move].row === target.row) {
       if (game.currentMove.targetCell.find($(".gamepiece")).length > 0) {
         if (game.currentMove.targetCell.find($(".gamepiece") === $(".ui.dragging"))) {
-          // console.log("valid move");
+          // "valid move"
           return true;
         } else {
-          // console.log("move target cell is occupied");
+          // "move target cell is occupied"
           return false;
         }
       }
-      // console.log("valid move");
+      // "valid move"
       return true;
     }
   }
-  // console.log("not a valid move: " + [target.letter, target.row]);
+  // "not a valid move: [target.letter, target.row]"
   return false;
 }
 
@@ -210,23 +287,25 @@ var validJump = function(validJumps, target) {
       var $jumpedPiece = $("td[data-col="+validJumps[jump].jumpedPiece.col+"][data-row="+validJumps[jump].jumpedPiece.row+"]");
       var $gamePiece = $jumpedPiece.find($(".gamepiece"));
       if (game.currentMove.targetCell.find($(".gamepiece")).length > 0) {
-        // console.log("jump target cell is occupied");
+        // "jump target cell is occupied"
         return false;
       } else if ($gamePiece.length===1) {
         if ($gamePiece.hasClass(game.player)) {
-          // console.log("cannot jump own piece");
+          // "cannot jump own piece"
           return false
         } else {
           game.currentMove.jumpedPiece = $gamePiece;
           return true;
         }
       }
-      // console.log("no jumpable piece at " + [$jumpedPiece.data("letter"), $jumpedPiece.data("row")]);
+      // "no jumpable piece at [$jumpedPiece.data('letter'), $jumpedPiece.data('row')]"
       return false;
     }
   }
   return false;
 }
+
+// end turn logic
 
 function updateGamePieceDataTo(thistd) {
   piece = game.currentMove.currentPiece;
@@ -256,13 +335,6 @@ function resetValidMoves() {
   }
 }
 
-function gameover() {
-  if ($(".graveyard").find("."+game.player).length === 12) {
-    return true;
-  }
-  return false;
-}
-
 function switchTurn() {
   switchPlayer();
   if (gameover()) {
@@ -285,105 +357,15 @@ function switchPlayer() {
   }
 }
 
-function startGame() {
-  game.start = true;
-  var $h2 = $("<h2>", {text: game.player.toUpperCase() + "'S TURN"});
-  if ($("caption").find("h2").length === 0) {
-    $("caption").append($h2);
+
+function gameover() {
+  if ($(".graveyard").find("."+game.player).length === 12) {
+    return true;
   }
-  generateGamePieces();
-  $(".gamepiece").draggable({
-    drag: function(event, ui) {
-      return dragHandler(this, ui);
-    },
-    cursor: "move",
-    containment: ".tdbody",
-    scroll: false,
-    revert: true,
-    start: function(event, ui) {
-      startHandler(this, ui);
-    },
-    stop: function(event, ui) {
-      stopHandler(this, ui);
-    }
-  });
-
-  $("td").droppable({
-    over: function(event, ui) {
-      if (game.currentMove.currentPiece.hasClass("pawn")) {
-        var validMoves = game.currentMove.validMoves.pawn;
-        var validJumps = game.currentMove.validJumps.pawn;
-      } else if (game.currentMove.currentPiece.hasClass("king")) {
-        var validMoves = game.currentMove.validMoves.king;
-        var validJumps = game.currentMove.validJumps.king;
-      }
-      var target = {col: $(this).data("col"), row: $(this).data("row"), letter: $(this).data("letter")};
-      game.currentMove.validMove = validMove(validMoves, target);
-      game.currentMove.validJump = validJump(validJumps, target)
-      game.currentMove.target = target;
-      game.currentMove.targetCell = $(this);
-    },
-    drop: function(event,ui) {
-      $this = $(this);
-
-      if ($this.find(".gamepiece").length > 0) {
-        // console.log("nope!");
-        return false;
-      } else if (game.currentMove.validMove || game.currentMove.validJump) {
-        ui.draggable.draggable("option", "revert", false);
-        var $this = $(this);
-
-        // $this.addClass("ui-state-highlight");
-
-        $this.append(ui.draggable);
-
-        var width = $this.width();
-        var height = $this.height();
-
-        var cntrLeft = width / 2 - ui.draggable.width() / 2;// + left;
-        var cntrTop = height / 2 - ui.draggable.height() / 2;// + top;
-
-        ui.draggable.css({
-            left: cntrLeft + "px",
-            top: cntrTop + "px",
-            "z-index": 0
-        });
-        if (game.currentMove.validMove) {
-          game.currentMove.moved = true;
-        } else if (game.currentMove.validJump) {
-          game.currentMove.moved = true;
-          game.currentMove.jumped = true;
-        }
-      } else {
-
-      }
-    }
-  });
+  return false;
 }
 
-function reset() {
-  if (game.start) {
-    $(".gamepiece").remove();
-    generateGamePieces();
-    game.player = "black";
-    $("caption h2").text(game.player.toUpperCase() + "'S TURN")
-    $(".gamepiece").draggable({
-      drag: function(event, ui) {
-        return dragHandler(this, ui);
-      },
-      cursor: "move",
-      containment: ".tdbody",
-      scroll: false,
-      revert: true,
-      start: function(event, ui) {
-        startHandler(this, ui);
-      },
-      stop: function(event, ui) {
-        stopHandler(this, ui);
-      }
-    });
-  }
-}
+// jQuery UI Draggable Handlers
 
 function dragHandler(gamepiece, ui) {
   if (game.player === "black") {
@@ -401,17 +383,15 @@ function dragHandler(gamepiece, ui) {
   }
 }
 
-
 function startHandler(gamepiece, ui) {
   game.currentMove.initialCell = $(gamepiece).parent();
   $(gamepiece).css({
     "z-index": 1
   });
   if (game.currentMove.moved && !game.currentMove.jumped) {
-    console.log("already moved");
+    // "already moved"
   } else {
     game.currentMove.currentPiece = $(gamepiece);
-    // game.currentMove.initial = $(this).parent();
     getValidMoves();
   }
 }
@@ -426,16 +406,11 @@ function stopHandler(gamepiece, ui) {
     if (game.currentMove.validMove || game.currentMove.validJump) {
       updateGamePieceDataTo(target);
       if (game.currentMove.validJump) {
-        // game.currentMove.jumpedPiece.draggable("destroy");
         game.currentMove.jumpedPiece.hide("explode", 1000);
         $(".graveyard").append(game.currentMove.jumpedPiece.detach());
       }
       if (game.currentMove.moved) {
         if (game.currentMove.jumped) {
-          // if (additionalJumps()) {
-          //   game.currentMove.additionalJumps = true;
-          //   return;
-          // } else {
             console.log(game.player + " jumped from " + [initial.data("letter"), initial.data("row")] + " to " + [target.data("letter"), target.data("row")]);
             switchTurn();
           // }
@@ -454,6 +429,8 @@ function stopHandler(gamepiece, ui) {
     $(ui.helper).draggable("option", "revert", true);
   }
 }
+
+// modals
 
 function gameoverModal() {
   $gameover = $("<div>", {id: "gameover", class: "modal"});

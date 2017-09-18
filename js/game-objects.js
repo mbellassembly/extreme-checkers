@@ -67,7 +67,6 @@ var game = {
           row: 0,
           jumpedPiece: {
             col: 0,
-            letter: 0,
             row: 0
           }
         },
@@ -76,7 +75,6 @@ var game = {
           row: 0,
           jumpedPiece: {
             col: 0,
-            letter: 0,
             row: 0
           }
         }
@@ -87,7 +85,6 @@ var game = {
           row: 0,
           jumpedPiece: {
             col: 0,
-            letter: 0,
             row: 0
           }
         },
@@ -96,7 +93,6 @@ var game = {
           row: 0,
           jumpedPiece: {
             col: 0,
-            letter: 0,
             row: 0
           }
         },
@@ -105,7 +101,6 @@ var game = {
           row: 0,
           jumpedPiece: {
             col: 0,
-            letter: 0,
             row: 0
           }
         },
@@ -114,7 +109,6 @@ var game = {
           row: 0,
           jumpedPiece: {
             col: 0,
-            letter: 0,
             row: 0
           }
         }

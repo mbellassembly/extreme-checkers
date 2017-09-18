@@ -1,15 +1,3 @@
-
-$(function() {
-  buildHeader();
-  buildMain();
-  buildFooter();
-
-  $(".gamepiece").draggable({
-    revert: "invalid"
-  });
-
-});
-
 function buildHeader() {
   $header = $("header");
   $h1 = $("<h1>");
@@ -18,7 +6,6 @@ function buildHeader() {
   $reset = $("<button>", {text: "RESET GAME", class: "reset ui-button ui-widget ui-corner-all"});
   $playAI = $("<button>", {text: "PLAY AI", class: "vsai ui-button ui-widget ui-corner-all"});
   $h1.text("EVENTUALLY EXTREME CHECKERS");
-  // $p.text("SELECT YOUR GAME-MODE (IF AVAILABLE)");
   $header.append($h1);
   $header.append($p);
   $header.append($start).append($reset).append($playAI);
@@ -27,7 +14,6 @@ function buildMain() {
   game.players.forEach(function(player) {
     generateBoard(player, game.gameboard.cols, game.gameboard.rows);
   });
-  // generateGamePieces();
 }
 function buildFooter() {
   $footer = $("footer");
@@ -37,6 +23,10 @@ function buildFooter() {
 }
 
 function generateBoard(player, cols, rows) {
+
+  // this is built for a two-board game eventually (you can build a second board
+  // by adding the red player to the game.players array), but right now really
+  // only supports a one board game.
 
   var getLetters = function(cols, reverse) {
     if (reverse) {
@@ -56,8 +46,6 @@ function generateBoard(player, cols, rows) {
 
   $main.append($table);
   $table.append($caption);
-  // $caption.append($("<h2>" + player.toUpperCase() + "'S BOARD</h2>"));
-  // $caption.append($("<h2>" + game.player.toUpperCase() + "'S TURN</h4>"));
   $table.append($thead).append($tbody);
   $thead.append($theadtr);
   $tbody.append($tbodytr);
@@ -121,7 +109,9 @@ function generateGamePieces() {
   var $trs = $table.find("tr");
   var $tdValid = $(".tbody-tr:nth-child(even) td:nth-child(odd), .tbody-tr:nth-child(odd) td:nth-child(even)");
   $tdValid.each(function(index) {
-    // TODO: dynamically generate from game.rowsOfPieces
+    // TODO: use rowsOfPieces to set how many pieces get generated
+    // if this gets implemented, will need to update win condition (currently
+    // statically set to 12 pieces).
     $this = $(this);
     $row = $this.data("row");
     $col = $this.data("col");

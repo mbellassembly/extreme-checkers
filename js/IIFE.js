@@ -1,3 +1,9 @@
+$(function() {
+  buildHeader();
+  buildMain();
+  buildFooter();
+});
+
 $(document).ready(function() {
 
   $(".reset").on("click", function() {
@@ -9,7 +15,7 @@ $(document).ready(function() {
   });
 
   $(".start").on("click", function() {
-    startGame();
+    start();
   });
 
 });
