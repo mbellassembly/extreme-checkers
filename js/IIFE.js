@@ -6,15 +6,15 @@ $(function() {
 
 $(document).ready(function() {
 
-  $(".reset").on("click", function() {
+  $(".reset").on("mouseup", function() {
     reset();
   });
 
-  $(".vsai").on("click", function() {
+  $(".vsai").on("mouseup", function() {
     aiModal();
   });
 
-  $(".start").on("click", function() {
+  $(".start").on("mouseup", function() {
     start();
   });
 

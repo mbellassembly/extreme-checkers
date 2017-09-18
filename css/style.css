@@ -21,6 +21,10 @@ button:active {
   left: -2px;
 }
 
+button:focus {
+  outline: none;
+}
+
 table {
   margin: 1em;
   display: inline-block;
