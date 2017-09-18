@@ -64,7 +64,7 @@ Core game logic is operational with minimal bugs.
 
 ## Acknowledgements
 
-###Thank you:
+### Thank you:
 
 [kylefox](https://github.com/kylefox) for your simple yet effective modal. Will be using your work in the future.
 
