@@ -264,7 +264,17 @@ function gameover() {
 }
 
 function switchTurn() {
+  switchPlayer();
+  if (gameover()) {
+    switchPlayer();
+    gameoverModal();
+  } else {
+    $("caption h2").text(game.player.toUpperCase() + "'S TURN");
+    resetCurrentMoveValues();
+  }
+}
 
+function switchPlayer() {
   switch (game.player) {
     case "red":
       game.player = "black";
@@ -273,13 +283,6 @@ function switchTurn() {
       game.player = "red";
       break;
   }
-  resetCurrentMoveValues();
-  if (gameover()) {
-    gameoverModal();
-  } else {
-    $("caption h2").text(game.player.toUpperCase() + "'S TURN");
-  }
-  // update turn heading under player's board heading
 }
 
 function startGame() {
@@ -360,7 +363,6 @@ function startGame() {
 
 function reset() {
   if (game.start) {
-    $(".gamepiece").draggable("destroy");
     $(".gamepiece").remove();
     generateGamePieces();
     game.player = "black";
@@ -407,7 +409,6 @@ function startHandler(gamepiece, ui) {
   });
   if (game.currentMove.moved && !game.currentMove.jumped) {
     console.log("already moved");
-    switchTurn();
   } else {
     game.currentMove.currentPiece = $(gamepiece);
     // game.currentMove.initial = $(this).parent();
@@ -425,21 +426,21 @@ function stopHandler(gamepiece, ui) {
     if (game.currentMove.validMove || game.currentMove.validJump) {
       updateGamePieceDataTo(target);
       if (game.currentMove.validJump) {
-        game.currentMove.jumpedPiece.draggable("destroy");
+        // game.currentMove.jumpedPiece.draggable("destroy");
         game.currentMove.jumpedPiece.hide("explode", 1000);
         $(".graveyard").append(game.currentMove.jumpedPiece.detach());
       }
       if (game.currentMove.moved) {
         if (game.currentMove.jumped) {
-          if (additionalJumps()) {
-            game.currentMove.additionalJumps = true;
-            return;
-          } else {
-            console.log("jumped from " + [initial.data("letter"), initial.data("row")] + " to " + [target.data("letter"), target.data("row")]);
+          // if (additionalJumps()) {
+          //   game.currentMove.additionalJumps = true;
+          //   return;
+          // } else {
+            console.log(game.player + " jumped from " + [initial.data("letter"), initial.data("row")] + " to " + [target.data("letter"), target.data("row")]);
             switchTurn();
-          }
+          // }
         } else {
-          console.log("moved from " + [initial.data("letter"), initial.data("row")] + " to " + [target.data("letter"), target.data("row")]);
+          console.log(game.player + " moved from " + [initial.data("letter"), initial.data("row")] + " to " + [target.data("letter"), target.data("row")]);
           switchTurn();
         }
       }
@@ -449,8 +450,7 @@ function stopHandler(gamepiece, ui) {
     } else if ($(gamepiece).hasClass("red") && $(gamepiece).data("row") === 8) {
       $(gamepiece).removeClass("pawn red-pawn").addClass("king red-king");
     }
-    if (!$(ui.helper).draggable("option", "revert")) {
-    }
+    if (!$(ui.helper).draggable("option", "revert")) {};
     $(ui.helper).draggable("option", "revert", true);
   }
 }

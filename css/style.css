@@ -70,6 +70,10 @@ div {
   background-repeat: no-repeat;
 }
 
+footer {
+  margin-top: -30px;
+}
+
 .black {
   color: #36454f;
 }
