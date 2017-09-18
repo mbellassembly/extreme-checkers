@@ -14,7 +14,7 @@ function buildHeader() {
   $header = $("header");
   $h1 = $("<h1>");
   $p = $("<p>");
-  $start = $("<button>", {text: "START GAME", class: "start-game"});
+  $start = $("<button>", {text: "START GAME", class: "start"});
   $reset = $("<button>", {text: "RESET GAME", class: "reset"});
   $playAI = $("<button>", {text: "PLAY AI", class: "vsai"});
   $h1.text("EVENTUALLY EXTREME CHECKERS");
@@ -27,7 +27,7 @@ function buildMain() {
   game.players.forEach(function(player) {
     generateBoard(player, game.gameboard.cols, game.gameboard.rows);
   });
-  generateGamePieces();
+  // generateGamePieces();
 }
 function buildFooter() {
   $footer = $("footer");
@@ -56,8 +56,8 @@ function generateBoard(player, cols, rows) {
 
   $main.append($table);
   $table.append($caption);
-  //$caption.append($("<h2>" + player.toUpperCase() + "'S BOARD</h2>"));
-  $caption.append($("<h2>" + game.player.toUpperCase() + "'S TURN</h4>"));
+  // $caption.append($("<h2>" + player.toUpperCase() + "'S BOARD</h2>"));
+  // $caption.append($("<h2>" + game.player.toUpperCase() + "'S TURN</h4>"));
   $table.append($thead).append($tbody);
   $thead.append($theadtr);
   $tbody.append($tbodytr);

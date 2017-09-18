@@ -289,14 +289,14 @@ function startGame() {
   generateGamePieces();
   $(".gamepiece").draggable({
     drag: function(event, ui) {
-      return dragHandler(this);
+      return dragHandler(this, ui);
     },
     cursor: "move",
     containment: ".tdbody",
     scroll: false,
     revert: true,
     start: function(event, ui) {
-      startHandler(this);
+      startHandler(this, ui);
     },
     stop: function(event, ui) {
       stopHandler(this, ui);
@@ -314,7 +314,7 @@ function startGame() {
       }
       var target = {col: $(this).data("col"), row: $(this).data("row"), letter: $(this).data("letter")};
       game.currentMove.validMove = validMove(validMoves, target);
-      game.currentMove.validJump = validJump(validJumps, target);
+      game.currentMove.validJump = validJump(validJumps, target)
       game.currentMove.target = target;
       game.currentMove.targetCell = $(this);
       // console.log("over something");
@@ -323,10 +323,13 @@ function startGame() {
       $this = $(this);
 
       if ($this.find(".gamepiece").length > 0) {
+        // console.log("nope!");
         return false;
       } else if (game.currentMove.validMove || game.currentMove.validJump) {
         ui.draggable.draggable("option", "revert", false);
         var $this = $(this);
+
+        // $this.addClass("ui-state-highlight");
 
         $this.append(ui.draggable);
 
@@ -344,10 +347,11 @@ function startGame() {
         if (game.currentMove.validMove) {
           game.currentMove.moved = true;
         } else if (game.currentMove.validJump) {
-          game.currentMove.true = true;
+          game.currentMove.moved = true;
+          game.currentMove.jumped = true;
         }
       } else {
-        return false;
+
       }
     }
   });
@@ -362,14 +366,14 @@ function reset() {
     $("caption h2").text(game.player.toUpperCase() + "'S TURN")
     $(".gamepiece").draggable({
       drag: function(event, ui) {
-        return dragHandler(this);
+        return dragHandler(this, ui);
       },
       cursor: "move",
       containment: ".tdbody",
       scroll: false,
       revert: true,
       start: function(event, ui) {
-        startHandler(this);
+        startHandler(this, ui);
       },
       stop: function(event, ui) {
         stopHandler(this, ui);
@@ -378,7 +382,7 @@ function reset() {
   }
 }
 
-function dragHandler(gamepiece) {
+function dragHandler(gamepiece, ui) {
   if (game.player === "black") {
     if ($(gamepiece).hasClass("black")) {
       return true;
@@ -395,7 +399,7 @@ function dragHandler(gamepiece) {
 }
 
 
-function startHandler(gamepiece) {
+function startHandler(gamepiece, ui) {
   game.currentMove.initialCell = $(gamepiece).parent();
   $(gamepiece).css({
     "z-index": 1
@@ -442,6 +446,9 @@ function stopHandler(gamepiece, ui) {
     } else if ($(gamepiece).hasClass("red") && $(gamepiece).data("row") === 8) {
       $(gamepiece).removeClass("pawn red-pawn").addClass("king red-king");
     }
+    if (!$(ui.helper).draggable("option", "revert")) {
+    }
+    $(ui.helper).draggable("option", "revert", true);
   }
 }
 
