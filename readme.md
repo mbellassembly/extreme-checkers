@@ -64,7 +64,10 @@ Core game logic is operational with minimal bugs.
 
 ## Acknowledgements
 
-Thank you:
+###Thank you:
+
 [kylefox](https://github.com/kylefox) for your simple yet effective modal. Will be using your work in the future.
+
 [VladamirAus](https://github.com/VladimirAus) for giving me inspiration with draggable/droppable within a checkers grid.
+
 [Andrew Whitaker](https://stackoverflow.com/questions/146106/how-should-i-organize-the-contents-of-my-css-files) for helping me center my gamepieces after a drop event.
