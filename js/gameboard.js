@@ -5,7 +5,7 @@ function buildHeader() {
   $start = $("<button>", {text: "START GAME", class: "start ui-button ui-widget ui-corner-all"});
   $reset = $("<button>", {text: "RESET GAME", class: "reset ui-button ui-widget ui-corner-all"});
   $playAI = $("<button>", {text: "PLAY AI", class: "vsai ui-button ui-widget ui-corner-all"});
-  $h1.text("EVENTUALLY EXTREME CHECKERS");
+  $h1.text("CHECKERS");
   $header.append($h1);
   $header.append($p);
   $header.append($start).append($reset).append($playAI);
